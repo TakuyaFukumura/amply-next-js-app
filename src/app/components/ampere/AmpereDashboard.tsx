@@ -230,6 +230,12 @@ function ApplianceList({appliances, onToggle, onEdit, onDelete}: {
                                     <div>
                                         <h3>{appliance.name}</h3>
                                         <p>
+                                            運転中 {formatAmps(appliance.runningAmpsTenths)}・起動時{' '}
+                                            {appliance.startupAmpsTenths === null
+                                                ? '未登録（運転中値を使用）'
+                                                : formatAmps(appliance.startupAmpsTenths)}
+                                        </p>
+                                        <p>
                                             {appliance.starting && appliance.startupAmpsTenths === null
                                                 ? appliance.enabled
                                                     ? `起動中（起動時値未登録のため運転中値 ${formatAmps(appliance.runningAmpsTenths)} を使用）`

@@ -30,6 +30,24 @@ describe('Home', () => {
         expect(screen.getByRole('img')).toHaveAccessibleName(/上限到達/);
     });
 
+    it('shows configured running and startup amps separately from current usage', async () => {
+        const configuredCatalog = `name,runningAmps,startupAmps,initiallyEnabled,note
+冷蔵庫,2.5,4.0,false,目安
+電子レンジ,15.0,,false,目安`;
+        jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(configuredCatalog));
+        render(<Home />, {reactStrictMode: false});
+        await screen.findByRole('heading', {name: '家電一覧'});
+
+        const fridgeRow = screen.getByRole('heading', {name: '冷蔵庫'}).closest('li');
+        expect(fridgeRow).not.toBeNull();
+        expect(within(fridgeRow as HTMLElement).getByText('運転中 2.5A・起動時 4.0A')).toBeInTheDocument();
+        expect(within(fridgeRow as HTMLElement).getByText('0.0A')).toBeInTheDocument();
+
+        const microwaveRow = screen.getByRole('heading', {name: '電子レンジ'}).closest('li');
+        expect(microwaveRow).not.toBeNull();
+        expect(within(microwaveRow as HTMLElement).getByText('運転中 15.0A・起動時 未登録（運転中値を使用）')).toBeInTheDocument();
+    });
+
     it('does not show totals on catalog errors and allows retrying', async () => {
         const fetchMock = jest.spyOn(global, 'fetch')
             .mockResolvedValueOnce(createResponse('bad', 500))
