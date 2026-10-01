@@ -6,3 +6,9 @@
 このプロジェクトは [Semantic Versioning](https://semver.org/lang/ja/) に従っています。
 
 ## [Unreleased]
+
+## [0.1.1] - 2026-10-01
+
+### Fixed
+
+- `main` 以外のブランチが Vercel にデプロイされないよう、除外パターンを `**` に変更
