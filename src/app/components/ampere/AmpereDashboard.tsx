@@ -4,7 +4,7 @@ import {useEffect, useMemo, useRef, useState} from 'react';
 import {calculateSummary, getApplianceAmpsTenths, getChartGroups} from '../../../lib/ampere/calculations';
 import {CatalogError, parseCatalog} from '../../../lib/ampere/csv';
 import {formatAmps, parseAmpsTenths, validateLimitTenths} from '../../../lib/ampere/validation';
-import type {Appliance, ApplianceInput} from '../../../lib/ampere/types';
+import type {AmpereSummary, Appliance, ApplianceInput} from '../../../lib/ampere/types';
 
 type DashboardState =
     | {status: 'loading'}
@@ -26,10 +26,11 @@ function makeId(): string {
     return `user-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
-function AmpereChart({appliances, limitTenths, totalTenths}: {
+function AmpereChart({appliances, limitTenths, totalTenths, status}: {
     appliances: Appliance[];
     limitTenths: number;
     totalTenths: number;
+    status: AmpereSummary['status'];
 }) {
     const groups = getChartGroups(appliances);
     const scaleTenths = Math.max(10, Math.ceil((Math.max(totalTenths, limitTenths) / 10) * 1.1) * 10);
@@ -37,6 +38,10 @@ function AmpereChart({appliances, limitTenths, totalTenths}: {
     const tickTenths = [0, Math.ceil(scaleTenths / 3), Math.ceil((scaleTenths * 2) / 3), scaleTenths]
         .map((value) => Math.ceil(value / 10) * 10);
     const uniqueTicks = [...new Set(tickTenths)];
+
+    const statusDescription = status === 'within'
+        ? '上限内'
+        : status === 'reached' ? '上限到達' : '上限超過';
 
     return (
         <section className="amp-card amp-chart-card" aria-labelledby="chart-heading">
@@ -50,7 +55,7 @@ function AmpereChart({appliances, limitTenths, totalTenths}: {
             <div
                 className="amp-chart"
                 role="img"
-                aria-label={`家電ごとの積み上げグラフ。合計${formatAmps(totalTenths)}、上限${formatAmps(limitTenths)}。上限マーカーを破線で表示しています。`}
+                aria-label={`家電ごとの積み上げグラフ。${statusDescription}。合計${formatAmps(totalTenths)}、上限${formatAmps(limitTenths)}。上限マーカーを破線で表示しています。`}
             >
                 <div className="amp-bar-track">
                     {groups.map((group, index) => (
@@ -86,7 +91,7 @@ function AmpereChart({appliances, limitTenths, totalTenths}: {
                     ))}
                 </ul>
             ) : (
-                <p className="amp-muted">有効な家電はありません。下の一覧から使う家電を有効にしてください。</p>
+                <p className="amp-muted">有効な家電はありません。家電一覧から使う家電を有効にしてください。</p>
             )}
         </section>
     );
@@ -214,7 +219,7 @@ function ApplianceList({appliances, onToggle, onEdit, onDelete}: {
                 <span className="amp-count">{appliances.length} 台</span>
             </div>
             {appliances.length === 0 ? (
-                <p className="amp-empty">家電がありません。上のフォームから追加できます。</p>
+                <p className="amp-empty">家電がありません。下の「家電を追加」フォームから登録できます。</p>
             ) : (
                 <ul className="amp-appliance-list">
                     {appliances.map((appliance) => {
@@ -226,7 +231,9 @@ function ApplianceList({appliances, onToggle, onEdit, onDelete}: {
                                         <h3>{appliance.name}</h3>
                                         <p>
                                             {appliance.starting && appliance.startupAmpsTenths === null
-                                                ? `起動中（起動時値未登録のため運転中値 ${formatAmps(appliance.runningAmpsTenths)} を使用）`
+                                                ? appliance.enabled
+                                                    ? `起動中（起動時値未登録のため運転中値 ${formatAmps(appliance.runningAmpsTenths)} を使用）`
+                                                    : `起動中ですが無効のため集計されません。有効にすると運転中値 ${formatAmps(appliance.runningAmpsTenths)} を使用します。`
                                                 : `現在の集計値 ${formatAmps(amount)}`}
                                         </p>
                                         {appliance.note && <p className="amp-appliance-note">{appliance.note}</p>}
@@ -288,7 +295,7 @@ export default function AmpereDashboard() {
                     message: error instanceof Error ? error.message : '予期しないエラーが発生しました。',
                 });
             });
-        return () => controller.abort();
+        return () => requestController.current?.abort();
     }, []);
 
     const retryCatalog = () => {
@@ -427,7 +434,7 @@ export default function AmpereDashboard() {
                                     {summary.status === 'within' ? '✓ 上限内' : summary.status === 'reached' ? '＝ 上限到達' : '！ 上限超過'}
                                 </strong>
                                 <span>上限 {formatAmps(limitTenths)}</span>
-                                {summary.status === 'within' && <span>残り {formatAmps(summary.remainingTenths)}</span>}
+                                {summary.status !== 'exceeded' && <span>残り {formatAmps(summary.remainingTenths)}</span>}
                                 {summary.status === 'exceeded' && <span>超過 {formatAmps(-summary.remainingTenths)}</span>}
                             </div>
                         </section>
@@ -443,6 +450,7 @@ export default function AmpereDashboard() {
                             appliances={dashboard.appliances}
                             limitTenths={limitTenths}
                             totalTenths={summary.totalTenths}
+                            status={summary.status}
                         />
                         <ApplianceList
                             appliances={dashboard.appliances}

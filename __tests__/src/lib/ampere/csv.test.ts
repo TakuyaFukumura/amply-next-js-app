@@ -29,6 +29,18 @@ describe('parseCatalog', () => {
         expect(() => parseCatalog(csv)).toThrow(CatalogError);
     });
 
+    it.each([
+        'name,runningAmps,startupAmps,initiallyEnabled,note\n,,,,',
+        'name,runningAmps,startupAmps,initiallyEnabled,note\n"",,,,',
+    ])('rejects a syntactically present record with empty fields', (csv) => {
+        expect(() => parseCatalog(csv)).toThrow('CSV 2行目');
+    });
+
+    it('ignores physically empty lines but still parses catalog rows', () => {
+        const csv = 'name,runningAmps,startupAmps,initiallyEnabled,note\n\n冷蔵庫,2.5,,false,目安\n\n';
+        expect(parseCatalog(csv)).toHaveLength(1);
+    });
+
     it('accepts a trailing newline and validates the initial catalog as twelve disabled appliances', () => {
         const csv = [
             'name,runningAmps,startupAmps,initiallyEnabled,note',

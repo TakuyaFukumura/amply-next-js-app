@@ -55,9 +55,9 @@ function parseRecords(source: string): CsvRecord[] {
             field = '';
             afterQuote = false;
         } else if (char === '\n' || char === '\r') {
-            fields.push(field);
-            if (fields.some((value) => value.length > 0)) {
-                records.push({fields, line: recordLine});
+            const isEmptyPhysicalLine = fields.length === 0 && field === '' && !afterQuote;
+            if (!isEmptyPhysicalLine) {
+                records.push({fields: [...fields, field], line: recordLine});
             }
             fields = [];
             field = '';
@@ -73,9 +73,8 @@ function parseRecords(source: string): CsvRecord[] {
     if (quoted) {
         throw new CatalogError(`CSV ${recordLine}行目: 引用符が閉じられていません。`);
     }
-    fields.push(field);
-    if (fields.some((value) => value.length > 0)) {
-        records.push({fields, line: recordLine});
+    if (fields.length > 0 || field.length > 0 || afterQuote) {
+        records.push({fields: [...fields, field], line: recordLine});
     }
     return records;
 }
