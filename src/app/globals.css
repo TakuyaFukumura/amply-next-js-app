@@ -595,39 +595,29 @@ input:focus-visible {
 .amp-switch {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    min-height: 36px;
-    padding: 0.3rem 0.5rem;
-    border: 1px solid var(--amp-border);
-    border-radius: 0.65rem;
-    background: var(--amp-surface);
-    color: var(--amp-text);
-    font-size: 0.85rem;
-    font-weight: 650;
-    transition: background 120ms ease, border-color 120ms ease;
+    gap: 0.42rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--amp-muted);
+    font-size: 0.82rem;
 }
 
-.amp-switch:hover {
-    background: var(--amp-soft);
-}
-
-.amp-switch-track {
+.amp-switch > span {
     position: relative;
-    flex: 0 0 auto;
-    width: 40px;
-    height: 24px;
-    border: 1px solid #64748b;
+    width: 32px;
+    height: 19px;
     border-radius: 20px;
-    background: #64748b;
-    transition: background 120ms ease, border-color 120ms ease;
+    background: #a3a3a3;
+    transition: background 120ms ease;
 }
 
-.amp-switch-track::after {
+.amp-switch > span::after {
     position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 18px;
-    height: 18px;
+    top: 3px;
+    left: 3px;
+    width: 13px;
+    height: 13px;
     border-radius: 50%;
     background: white;
     content: "";
@@ -635,52 +625,16 @@ input:focus-visible {
 }
 
 .amp-switch.is-on {
-    border-color: #0f766e;
-    background: #e6f4f1;
-    color: #115e59;
+    color: var(--amp-text);
+    font-weight: 700;
 }
 
-.dark .amp-switch {
-    border-color: #526172;
-    background: #273548;
-    color: #f1f5f9;
+.amp-switch.is-on > span {
+    background: var(--amp-primary);
 }
 
-.dark .amp-switch.is-on {
-    border-color: #2dd4bf;
-    background: #134e4a;
-    color: #ccfbf1;
-}
-
-.amp-switch.is-on .amp-switch-track {
-    border-color: #0f766e;
-    background: #0f766e;
-}
-
-.amp-switch.is-on .amp-switch-track::after {
-    transform: translateX(16px);
-}
-
-.amp-switch-state {
-    min-width: 2.25rem;
-    padding: 0.12rem 0.3rem;
-    border-radius: 0.35rem;
-    background: #e2e8f0;
-    color: #1e293b;
-    font-size: 0.68rem;
-    font-weight: 800;
-    letter-spacing: 0.02em;
-    text-align: center;
-}
-
-.amp-switch.is-on .amp-switch-state {
-    background: #0f766e;
-    color: #ffffff;
-}
-
-.dark .amp-switch-state {
-    background: #475569;
-    color: #f1f5f9;
+.amp-switch.is-on > span::after {
+    transform: translateX(13px);
 }
 
 .amp-empty {

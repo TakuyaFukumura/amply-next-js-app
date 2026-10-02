@@ -84,25 +84,6 @@ describe('Home', () => {
         expect(screen.getByRole('switch', {name: '冷蔵庫を起動中にする'})).toHaveAttribute('aria-checked', 'false');
     });
 
-    it('shows clear ON and OFF labels on appliance switches and updates them when toggled', async () => {
-        const enabledCatalog = catalog.replace('冷蔵庫,2.5,,false', '冷蔵庫,2.5,,true');
-        jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(enabledCatalog));
-        render(<Home/>, {reactStrictMode: false});
-        await screen.findByRole('heading', {name: '登録家電一覧'});
-
-        const fridgeEnabledSwitch = screen.getByRole('switch', {name: '冷蔵庫を集計に含める'});
-        const fridgeStartingSwitch = screen.getByRole('switch', {name: '冷蔵庫を起動中にする'});
-        const microwaveEnabledSwitch = screen.getByRole('switch', {name: '電子レンジを集計に含める'});
-        expect(within(fridgeEnabledSwitch).getByText('ON')).toBeInTheDocument();
-        expect(within(fridgeStartingSwitch).getByText('OFF')).toBeInTheDocument();
-        expect(within(microwaveEnabledSwitch).getByText('OFF')).toBeInTheDocument();
-
-        fireEvent.click(fridgeStartingSwitch);
-        fireEvent.click(microwaveEnabledSwitch);
-        expect(within(fridgeStartingSwitch).getByText('ON')).toBeInTheDocument();
-        expect(within(microwaveEnabledSwitch).getByText('ON')).toBeInTheDocument();
-    });
-
     it('sorts enabled appliances first, then sorts each usage group by current amps', async () => {
         const unsortedCatalog = `name,runningAmps,startupAmps,initiallyEnabled,note
 冷蔵庫,2.5,4.0,true,目安

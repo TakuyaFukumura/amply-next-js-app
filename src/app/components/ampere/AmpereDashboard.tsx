@@ -343,9 +343,7 @@ function ApplianceList({appliances, onToggle, onEdit}: {
                                         className={`amp-switch ${appliance.enabled ? 'is-on' : ''}`}
                                         onClick={() => onToggle(appliance.id, 'enabled')}
                                     >
-                                        <span className="amp-switch-track" aria-hidden="true"/>
-                                        使用中
-                                        <strong className="amp-switch-state">{appliance.enabled ? 'ON' : 'OFF'}</strong>
+                                        <span aria-hidden="true"/>使用中
                                     </button>
                                     <button
                                         type="button"
@@ -355,9 +353,7 @@ function ApplianceList({appliances, onToggle, onEdit}: {
                                         className={`amp-switch ${appliance.starting ? 'is-on' : ''}`}
                                         onClick={() => onToggle(appliance.id, 'starting')}
                                     >
-                                        <span className="amp-switch-track" aria-hidden="true"/>
-                                        起動中
-                                        <strong className="amp-switch-state">{appliance.starting ? 'ON' : 'OFF'}</strong>
+                                        <span aria-hidden="true"/>起動中
                                     </button>
                                 </div>
                             </li>
