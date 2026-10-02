@@ -545,6 +545,16 @@ input:focus-visible {
     overflow-wrap: anywhere;
 }
 
+.amp-appliance-name-button {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--amp-primary);
+    font-weight: 700;
+    text-align: left;
+    overflow-wrap: anywhere;
+}
+
 .amp-appliance-main p {
     margin: 0.3rem 0 0;
     color: var(--amp-muted);
@@ -564,13 +574,6 @@ input:focus-visible {
     flex-wrap: wrap;
     gap: 0.75rem 1rem;
     margin-top: 0.85rem;
-}
-
-.amp-appliance-edit-actions {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-left: auto;
 }
 
 .amp-switch {
@@ -616,19 +619,6 @@ input:focus-visible {
 
 .amp-switch.is-on > span::after {
     transform: translateX(13px);
-}
-
-.amp-text-button {
-    padding: 0.2rem;
-    border: 0;
-    background: transparent;
-    color: var(--amp-primary);
-    font-size: 0.82rem;
-    font-weight: 700;
-}
-
-.amp-danger-text {
-    color: var(--amp-danger);
 }
 
 .amp-empty {

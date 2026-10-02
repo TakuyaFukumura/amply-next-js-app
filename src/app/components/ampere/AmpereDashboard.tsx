@@ -259,7 +259,15 @@ function ApplianceList({appliances, onToggle, onEdit}: {
                             <li key={appliance.id} className="amp-appliance-row">
                                 <div className="amp-appliance-main">
                                     <div>
-                                        <h3>{appliance.name}</h3>
+                                        <h3>
+                                            <button
+                                                className="amp-appliance-name-button"
+                                                type="button"
+                                                onClick={() => onEdit(appliance)}
+                                            >
+                                                {appliance.name}
+                                            </button>
+                                        </h3>
                                         <p>
                                             運転中 {formatAmps(appliance.runningAmpsTenths)}・起動時{' '}
                                             {appliance.startupAmpsTenths === null
@@ -298,11 +306,6 @@ function ApplianceList({appliances, onToggle, onEdit}: {
                                     >
                                         <span aria-hidden="true"/>起動中
                                     </button>
-                                    <div className="amp-appliance-edit-actions">
-                                        <button className="amp-text-button" type="button"
-                                                onClick={() => onEdit(appliance)}>編集
-                                        </button>
-                                    </div>
                                 </div>
                             </li>
                         );

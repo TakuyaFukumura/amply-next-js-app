@@ -244,7 +244,7 @@ describe('Home', () => {
         await screen.findByRole('heading', {name: '登録家電一覧'});
         fireEvent.click(screen.getByRole('switch', {name: '冷蔵庫を集計に含める'}));
         fireEvent.click(screen.getByRole('switch', {name: '冷蔵庫を起動中にする'}));
-        fireEvent.click(screen.getAllByRole('button', {name: '編集'})[0]);
+        fireEvent.click(screen.getByRole('button', {name: '冷蔵庫'}));
         expect(screen.getByLabelText(/家電名/)).toHaveFocus();
         fireEvent.change(screen.getByLabelText(/家電名/), {target: {value: '冷蔵庫（編集）'}});
         fireEvent.change(screen.getByLabelText(/運転中アンペア数/), {target: {value: '3.0'}});
@@ -257,7 +257,8 @@ describe('Home', () => {
 
         const fridgeRow = screen.getByRole('heading', {name: '冷蔵庫（編集）'}).closest('li');
         expect(fridgeRow).not.toBeNull();
-        fireEvent.click(within(fridgeRow as HTMLElement).getByRole('button', {name: '編集'}));
+        expect(screen.queryByRole('button', {name: '編集'})).not.toBeInTheDocument();
+        fireEvent.click(within(fridgeRow as HTMLElement).getByRole('button', {name: '冷蔵庫（編集）'}));
         expect(screen.getByRole('button', {name: '削除'})).toBeInTheDocument();
         fireEvent.click(screen.getByRole('button', {name: '削除'}));
         expect(screen.queryByRole('heading', {name: '冷蔵庫（編集）'})).not.toBeInTheDocument();
@@ -265,7 +266,7 @@ describe('Home', () => {
 
         const microwaveRow = screen.getByRole('heading', {name: '電子レンジ'}).closest('li');
         expect(microwaveRow).not.toBeNull();
-        fireEvent.click(within(microwaveRow as HTMLElement).getByRole('button', {name: '編集'}));
+        fireEvent.click(within(microwaveRow as HTMLElement).getByRole('button', {name: '電子レンジ'}));
         fireEvent.click(screen.getByRole('button', {name: '削除'}));
         expect(screen.queryByRole('heading', {name: '電子レンジ'})).not.toBeInTheDocument();
         expect(screen.getByText(/下の「家電を追加」フォーム/)).toBeInTheDocument();
