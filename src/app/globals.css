@@ -4,30 +4,30 @@
 
 :root {
     color-scheme: light;
-    --amp-bg: #f4f7f6;
+    --amp-bg: #ffffff;
     --amp-surface: #ffffff;
-    --amp-text: #172d2a;
-    --amp-muted: #667a76;
-    --amp-border: #dce6e3;
-    --amp-primary: #087e70;
-    --amp-primary-dark: #06675d;
-    --amp-soft: #eaf5f2;
+    --amp-text: #171717;
+    --amp-muted: #737373;
+    --amp-border: #e5e5e5;
+    --amp-primary: #171717;
+    --amp-primary-dark: #404040;
+    --amp-soft: #f5f5f5;
     --amp-danger: #aa3442;
-    --amp-focus: #087e70;
+    --amp-focus: #737373;
 }
 
 .dark {
     color-scheme: dark;
-    --amp-bg: #111b19;
-    --amp-surface: #1b2926;
-    --amp-text: #edf5f2;
-    --amp-muted: #a8b9b4;
-    --amp-border: #354642;
-    --amp-primary: #56c4ae;
-    --amp-primary-dark: #3ca58f;
-    --amp-soft: #243c36;
+    --amp-bg: #0a0a0a;
+    --amp-surface: #171717;
+    --amp-text: #ededed;
+    --amp-muted: #a3a3a3;
+    --amp-border: #404040;
+    --amp-primary: #ededed;
+    --amp-primary-dark: #d4d4d4;
+    --amp-soft: #171717;
     --amp-danger: #ff9ba4;
-    --amp-focus: #5abfac;
+    --amp-focus: #a3a3a3;
 }
 
 * {
@@ -59,13 +59,7 @@ input:focus-visible {
 .amp-page {
     min-height: calc(100vh - 4rem);
     padding: 2.5rem 1rem 4rem;
-    background: radial-gradient(ellipse at 12% 0%, rgb(199 231 221 / 50%), transparent 36rem),
-    var(--amp-bg);
-}
-
-.dark .amp-page {
-    background: radial-gradient(ellipse at 12% 0%, rgb(33 79 68 / 35%), transparent 36rem),
-    var(--amp-bg);
+    background: var(--amp-bg);
 }
 
 .amp-container {
@@ -125,7 +119,7 @@ input:focus-visible {
     border: 1px solid var(--amp-border);
     border-radius: 1.1rem;
     background: var(--amp-surface);
-    box-shadow: 0 8px 28px rgb(30 65 57 / 5%);
+    box-shadow: 0 8px 28px rgb(0 0 0 / 5%);
 }
 
 .amp-section-heading {
@@ -229,7 +223,7 @@ input:focus-visible {
 }
 
 .dark .amp-button-primary {
-    color: #102320;
+    color: #0a0a0a;
 }
 
 .amp-button-primary:hover {
@@ -263,7 +257,7 @@ input:focus-visible {
 }
 
 .amp-summary-within {
-    border-color: #a8d9cb;
+    border-color: var(--amp-border);
 }
 
 .amp-summary-reached {
@@ -557,7 +551,7 @@ input:focus-visible {
     width: 32px;
     height: 19px;
     border-radius: 20px;
-    background: #9aa9a4;
+    background: #a3a3a3;
     transition: background 120ms ease;
 }
 
