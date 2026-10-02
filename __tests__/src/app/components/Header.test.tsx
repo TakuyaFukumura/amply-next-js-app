@@ -246,6 +246,7 @@ describe('Header', () => {
 
             const header = screen.getByRole('banner');
             expect(header).toHaveClass('bg-white/80', 'dark:bg-gray-800/80');
+            expect(screen.getByRole('heading', {name: 'Amply'})).toHaveClass('text-gray-900', 'dark:text-gray-100');
         });
 
         it('ボタンに適切なスタイルクラスが適用される', () => {

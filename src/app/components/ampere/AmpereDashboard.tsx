@@ -119,10 +119,11 @@ function AmpereChart({appliances, limitTenths, totalTenths, status}: {
     );
 }
 
-function ApplianceEditor({appliances, editing, onCancel, onSave}: {
+function ApplianceEditor({appliances, editing, onCancel, onDelete, onSave}: {
     appliances: Appliance[];
     editing: Appliance | null;
     onCancel: () => void;
+    onDelete: (id: string) => void;
     onSave: (input: ApplianceInput) => void;
 }) {
     const [name, setName] = useState(editing?.name ?? '');
@@ -170,8 +171,8 @@ function ApplianceEditor({appliances, editing, onCancel, onSave}: {
         <section className="amp-card" aria-labelledby="editor-heading">
             <div className="amp-section-heading">
                 <div>
-                    <p className="amp-eyebrow">家電の管理</p>
-                    <h2 id="editor-heading">{editing ? '家電を編集' : '家電を追加'}</h2>
+                    <p className="amp-eyebrow">家電管理</p>
+                    <h2 id="editor-heading">{editing ? '編集' : '追加'}</h2>
                 </div>
                 <span className="amp-count">{appliances.length} / {MAX_APPLIANCES} 台</span>
             </div>
@@ -180,6 +181,7 @@ function ApplianceEditor({appliances, editing, onCancel, onSave}: {
                 <label className="amp-field">
                     <span>家電名 <span className="amp-required">必須</span></span>
                     <input
+                        autoFocus={Boolean(editing)}
                         value={name}
                         onChange={(event) => setName(event.target.value)}
                         aria-invalid={Boolean(errors.name)}
@@ -223,41 +225,75 @@ function ApplianceEditor({appliances, editing, onCancel, onSave}: {
                 {errors.limit && <p className="amp-error amp-field-wide" role="alert">{errors.limit}</p>}
                 <div className="amp-form-actions amp-field-wide">
                     <button className="amp-button amp-button-primary"
-                            type="submit">{editing ? '変更を保存' : '家電を追加'}</button>
+                            type="submit">{editing ? '変更を保存' : '追加'}</button>
                     {editing && <button className="amp-button amp-button-secondary" type="button"
                                         onClick={onCancel}>編集をキャンセル</button>}
+                    {editing && <button className="amp-button amp-button-danger amp-form-delete" type="button"
+                                        onClick={() => onDelete(editing.id)}>削除</button>}
                 </div>
             </form>
         </section>
     );
 }
 
-function ApplianceList({appliances, onToggle, onEdit, onDelete}: {
+function ApplianceList({appliances, onToggle, onEdit}: {
     appliances: Appliance[];
     onToggle: (id: string, field: 'enabled' | 'starting') => void;
     onEdit: (appliance: Appliance) => void;
-    onDelete: (id: string) => void;
 }) {
+    const [enabledOnly, setEnabledOnly] = useState(false);
+    const [hideNotes, setHideNotes] = useState(false);
+    const visibleAppliances = enabledOnly ? appliances.filter((appliance) => appliance.enabled) : appliances;
+
     return (
         <section className="amp-card" aria-labelledby="appliances-heading">
             <div className="amp-section-heading">
                 <div>
-                    <p className="amp-eyebrow">登録内容</p>
-                    <h2 id="appliances-heading">家電一覧</h2>
+                    <h2 id="appliances-heading">登録家電一覧</h2>
                 </div>
                 <span className="amp-count">{appliances.length} 台</span>
             </div>
+            {appliances.length > 0 && (
+                <div className="amp-appliance-filters">
+                    <label className="amp-appliance-filter">
+                        <input
+                            type="checkbox"
+                            checked={enabledOnly}
+                            onChange={(event) => setEnabledOnly(event.target.checked)}
+                        />
+                        使用中のみ表示
+                    </label>
+                    <label className="amp-appliance-filter">
+                        <input
+                            type="checkbox"
+                            checked={hideNotes}
+                            onChange={(event) => setHideNotes(event.target.checked)}
+                        />
+                        メモを非表示
+                    </label>
+                </div>
+            )}
             {appliances.length === 0 ? (
-                <p className="amp-empty">家電がありません。下の「家電を追加」フォームから登録できます。</p>
+                <p className="amp-empty">家電がありません。下の「追加」フォームから登録できます。</p>
+            ) : visibleAppliances.length === 0 ? (
+                <p className="amp-empty" role="status">使用中の家電はありません。</p>
             ) : (
                 <ul className="amp-appliance-list">
-                    {appliances.map((appliance) => {
+                    {visibleAppliances.map((appliance) => {
                         const amount = getApplianceAmpsTenths(appliance);
                         return (
                             <li key={appliance.id} className="amp-appliance-row">
                                 <div className="amp-appliance-main">
                                     <div>
-                                        <h3>{appliance.name}</h3>
+                                        <h3>
+                                            <button
+                                                className="amp-appliance-name-button"
+                                                type="button"
+                                                onClick={() => onEdit(appliance)}
+                                            >
+                                                {appliance.name}
+                                            </button>
+                                        </h3>
                                         <p>
                                             運転中 {formatAmps(appliance.runningAmpsTenths)}・起動時{' '}
                                             {appliance.startupAmpsTenths === null
@@ -271,7 +307,9 @@ function ApplianceList({appliances, onToggle, onEdit, onDelete}: {
                                                     : `起動中ですが無効のため集計されません。有効にすると運転中値 ${formatAmps(appliance.runningAmpsTenths)} を使用します。`}
                                             </p>
                                         )}
-                                        {appliance.note && <p className="amp-appliance-note">{appliance.note}</p>}
+                                        {appliance.note && !hideNotes && (
+                                            <p className="amp-appliance-note">{appliance.note}</p>
+                                        )}
                                     </div>
                                     <strong className="amp-appliance-value">{formatAmps(amount)}</strong>
                                 </div>
@@ -295,12 +333,6 @@ function ApplianceList({appliances, onToggle, onEdit, onDelete}: {
                                         onClick={() => onToggle(appliance.id, 'starting')}
                                     >
                                         <span aria-hidden="true"/>起動中
-                                    </button>
-                                    <button className="amp-text-button" type="button"
-                                            onClick={() => onEdit(appliance)}>編集
-                                    </button>
-                                    <button className="amp-text-button amp-danger-text" type="button"
-                                            onClick={() => onDelete(appliance.id)}>削除
                                     </button>
                                 </div>
                             </li>
@@ -367,6 +399,16 @@ export default function AmpereDashboard() {
                 appliances: current.appliances.map((appliance) => appliance.id === id ? update(appliance) : appliance)
             }
             : current);
+    };
+
+    const deleteAppliance = (id: string) => {
+        setDashboard((current) => current.status === 'ready'
+            ? {
+                ...current,
+                appliances: current.appliances.filter((appliance) => appliance.id !== id)
+            }
+            : current);
+        setEditingId((current) => current === id ? null : current);
     };
 
     const editing = dashboard.status === 'ready'
@@ -487,21 +529,13 @@ export default function AmpereDashboard() {
                                 [field]: !appliance[field]
                             }))}
                             onEdit={(appliance) => setEditingId(appliance.id)}
-                            onDelete={(id) => {
-                                setDashboard((current) => current.status === 'ready'
-                                    ? {
-                                        ...current,
-                                        appliances: current.appliances.filter((appliance) => appliance.id !== id)
-                                    }
-                                    : current);
-                                if (editingId === id) setEditingId(null);
-                            }}
                         />
                         <ApplianceEditor
                             key={editingId ?? 'new'}
                             appliances={dashboard.appliances}
                             editing={editing}
                             onCancel={() => setEditingId(null)}
+                            onDelete={deleteAppliance}
                             onSave={saveAppliance}
                         />
                     </>
