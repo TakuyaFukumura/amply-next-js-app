@@ -3,8 +3,9 @@ import Home from '../../../src/app/page';
 import {formatAmps, MAX_APPLIANCE_AMPS_TENTHS, MAX_APPLIANCES} from '../../../src/lib/ampere/validation';
 
 const catalog = `name,runningAmps,startupAmps,initiallyEnabled,note
-冷蔵庫,2.5,,false,450L級の目安
-電子レンジ,15.0,,false,加熱時の目安`;
+冷蔵庫,2.5,,false,200L級の目安
+エアコン,6.0,,false,100V・6畳用の目安
+電子レンジ,14.0,,false,低価格帯オーブンレンジの目安`;
 
 const createResponse = (body: string, status = 200): Response => ({
     ok: status >= 200 && status < 300,
@@ -29,6 +30,26 @@ describe('Home', () => {
         expect(screen.getByText('＝ 上限到達')).toBeInTheDocument();
         expect(screen.getByText('残り 0.0A')).toBeInTheDocument();
         expect(screen.getByRole('img')).toHaveAccessibleName(/上限到達/);
+    });
+
+    it('includes the refrigerator, air conditioner and PC appliances in usage by default', async () => {
+        const initiallyEnabledCatalog = [
+            catalog
+                .replace('冷蔵庫,2.5,,false', '冷蔵庫,2.5,,true')
+                .replace('エアコン,6.0,,false', 'エアコン,6.0,,true'),
+            'ノートPC,0.7,,true,65W級の目安',
+            'デスクトップPC,1.5,,true,150W級の目安',
+        ].join('\n');
+        jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(initiallyEnabledCatalog));
+        render(<Home/>, {reactStrictMode: false});
+        await screen.findByRole('heading', {name: '家電一覧'});
+
+        expect(screen.getByRole('switch', {name: '冷蔵庫を集計に含める'})).toHaveAttribute('aria-checked', 'true');
+        expect(screen.getByRole('switch', {name: 'エアコンを集計に含める'})).toHaveAttribute('aria-checked', 'true');
+        expect(screen.getByRole('switch', {name: 'ノートPCを集計に含める'})).toHaveAttribute('aria-checked', 'true');
+        expect(screen.getByRole('switch', {name: 'デスクトップPCを集計に含める'})).toHaveAttribute('aria-checked', 'true');
+        expect(screen.getByRole('heading', {name: '10.7A'})).toBeInTheDocument();
+        expect(screen.getByRole('switch', {name: '冷蔵庫を起動中にする'})).toHaveAttribute('aria-checked', 'false');
     });
 
     it('shows configured running and startup amps separately from current usage', async () => {
