@@ -1,7 +1,12 @@
 'use client';
 
 import {useEffect, useMemo, useRef, useState} from 'react';
-import {calculateSummary, getApplianceAmpsTenths, getChartGroups} from '../../../lib/ampere/calculations';
+import {
+    calculateSummary,
+    getApplianceAmpsTenths,
+    getApplianceOperatingAmpsTenths,
+    getChartGroups,
+} from '../../../lib/ampere/calculations';
 import {CatalogError, parseCatalog} from '../../../lib/ampere/csv';
 import {
     formatAmps,
@@ -243,9 +248,13 @@ function ApplianceList({appliances, onToggle, onEdit}: {
 }) {
     const [applianceFilter, setApplianceFilter] = useState<'all' | 'enabled' | 'disabled'>('all');
     const [hideNotes, setHideNotes] = useState(false);
-    const visibleAppliances = applianceFilter === 'all'
-        ? appliances
-        : appliances.filter((appliance) => appliance.enabled === (applianceFilter === 'enabled'));
+    const visibleAppliances = appliances
+        .filter((appliance) => applianceFilter === 'all'
+            || appliance.enabled === (applianceFilter === 'enabled'))
+        .sort((first, second) =>
+            Number(second.enabled) - Number(first.enabled)
+            || getApplianceOperatingAmpsTenths(second) - getApplianceOperatingAmpsTenths(first)
+        );
 
     return (
         <section className="amp-card" aria-labelledby="appliances-heading">

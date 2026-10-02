@@ -1,13 +1,14 @@
 import type {AmpereSummary, Appliance, ChartGroup} from './types';
 
-export function getApplianceAmpsTenths(appliance: Appliance): number {
-    if (!appliance.enabled) {
-        return 0;
-    }
+export function getApplianceOperatingAmpsTenths(appliance: Appliance): number {
     if (appliance.starting && appliance.startupAmpsTenths !== null) {
         return appliance.startupAmpsTenths;
     }
     return appliance.runningAmpsTenths;
+}
+
+export function getApplianceAmpsTenths(appliance: Appliance): number {
+    return appliance.enabled ? getApplianceOperatingAmpsTenths(appliance) : 0;
 }
 
 export function calculateSummary(appliances: Appliance[], limitTenths: number): AmpereSummary {
