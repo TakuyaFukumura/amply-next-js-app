@@ -23,6 +23,7 @@ describe('Home', () => {
         expect(await screen.findByRole('heading', {name: '家電一覧'})).toBeInTheDocument();
         expect(screen.getByRole('heading', {name: '0.0A'})).toBeInTheDocument();
         expect(screen.queryByText('比較する基準')).not.toBeInTheDocument();
+        expect(screen.queryByText('この画面をリロードすると、上限は20.0Aに、家電はCSVの初期状態に戻ります。')).not.toBeInTheDocument();
         const totalHeading = screen.getByRole('heading', {name: '0.0A'});
         const safetyNote = screen.getByText('100V家電を対象にした家全体の目安です。実際のブレーカー遮断を保証するものではありません。');
         expect(totalHeading.compareDocumentPosition(safetyNote) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
@@ -121,8 +122,6 @@ describe('Home', () => {
         jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(catalog));
         render(<Home/>, {reactStrictMode: false});
         await screen.findByRole('heading', {name: '家電一覧'});
-
-        expect(screen.getByText(/上限は20\.0Aに、家電はCSVの初期状態に戻ります/)).toBeInTheDocument();
 
         fireEvent.change(screen.getByLabelText(/家電名/), {target: {value: '極端な値の家電'}});
         fireEvent.change(screen.getByLabelText(/運転中アンペア数/), {target: {value: '180143985094819.2'}});

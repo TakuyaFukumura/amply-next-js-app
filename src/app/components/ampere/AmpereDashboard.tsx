@@ -432,7 +432,6 @@ export default function AmpereDashboard() {
                         <section className="amp-card amp-limit-card" aria-labelledby="limit-heading">
                             <div className="amp-limit-copy">
                                 <h2 id="limit-heading">上限アンペア数</h2>
-                                <p className="amp-muted">この画面をリロードすると、上限は20.0Aに、家電はCSVの初期状態に戻ります。</p>
                             </div>
                             <form className="amp-limit-form" onSubmit={applyLimit} noValidate>
                                 <label className="amp-sr-only" htmlFor="limit-amps">上限アンペア数</label>
