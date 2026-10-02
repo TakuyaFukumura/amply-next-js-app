@@ -297,12 +297,14 @@ function ApplianceList({appliances, onToggle, onEdit, onDelete}: {
                                     >
                                         <span aria-hidden="true"/>起動中
                                     </button>
-                                    <button className="amp-text-button" type="button"
-                                            onClick={() => onEdit(appliance)}>編集
-                                    </button>
-                                    <button className="amp-text-button amp-danger-text" type="button"
-                                            onClick={() => onDelete(appliance.id)}>削除
-                                    </button>
+                                    <div className="amp-appliance-edit-actions">
+                                        <button className="amp-text-button" type="button"
+                                                onClick={() => onEdit(appliance)}>編集
+                                        </button>
+                                        <button className="amp-text-button amp-danger-text" type="button"
+                                                onClick={() => onDelete(appliance.id)}>削除
+                                        </button>
+                                    </div>
                                 </div>
                             </li>
                         );

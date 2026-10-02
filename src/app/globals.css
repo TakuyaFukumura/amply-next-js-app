@@ -556,6 +556,13 @@ input:focus-visible {
     margin-top: 0.85rem;
 }
 
+.amp-appliance-edit-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-left: auto;
+}
+
 .amp-switch {
     display: inline-flex;
     align-items: center;
