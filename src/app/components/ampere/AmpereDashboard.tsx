@@ -58,11 +58,10 @@ function AmpereChart({appliances, limitTenths, totalTenths, status}: {
         : status === 'reached' ? '上限到達' : '上限超過';
 
     return (
-        <section className="amp-card amp-chart-card" aria-labelledby="chart-heading">
+        <section className="amp-card amp-chart-card" aria-label="使用状況">
             <div className="amp-section-heading">
                 <div>
                     <p className="amp-eyebrow">使用状況</p>
-                    <h2 id="chart-heading">家電ごとの内訳</h2>
                 </div>
                 <span className="amp-chart-total">合計 {formatAmps(totalTenths)}</span>
             </div>

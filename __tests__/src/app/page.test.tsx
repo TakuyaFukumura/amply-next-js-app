@@ -22,6 +22,8 @@ describe('Home', () => {
 
         expect(await screen.findByRole('heading', {name: '家電一覧'})).toBeInTheDocument();
         expect(screen.getByRole('heading', {name: '0.0A'})).toBeInTheDocument();
+        expect(screen.queryByText('家電ごとの内訳')).not.toBeInTheDocument();
+        expect(screen.getByRole('region', {name: '使用状況'})).toBeInTheDocument();
         expect(screen.queryByText('上限 20.0A', {exact: true})).not.toBeInTheDocument();
         expect(screen.queryByText('比較する基準')).not.toBeInTheDocument();
         expect(screen.queryByText('この画面をリロードすると、上限は20.0Aに、家電はCSVの初期状態に戻ります。')).not.toBeInTheDocument();
