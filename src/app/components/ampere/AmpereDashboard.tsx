@@ -9,7 +9,6 @@ import {
     MAX_APPLIANCE_AMPS_TENTHS,
     MAX_APPLIANCES,
     parseAmpsTenths,
-    validateLimitTenths,
 } from '../../../lib/ampere/validation';
 import type {AmpereSummary, Appliance, ApplianceInput} from '../../../lib/ampere/types';
 
@@ -19,6 +18,7 @@ type DashboardState =
     | { status: 'ready'; appliances: Appliance[] };
 
 const COLORS = ['#147d71', '#3975c6', '#bc6b28', '#8256a6', '#c04c64', '#558c39', '#277f9f', '#9c7126', '#5465a8', '#a64f82', '#617c7c'];
+const LIMIT_OPTIONS_TENTHS = [100, 200, 300, 400, 500, 600];
 
 async function requestCatalog(signal: AbortSignal): Promise<Appliance[]> {
     const response = await fetch('/data/appliances.csv', {signal});
@@ -314,9 +314,7 @@ function ApplianceList({appliances, onToggle, onEdit, onDelete}: {
 
 export default function AmpereDashboard() {
     const [dashboard, setDashboard] = useState<DashboardState>({status: 'loading'});
-    const [limitInput, setLimitInput] = useState('20.0');
     const [limitTenths, setLimitTenths] = useState(200);
-    const [limitError, setLimitError] = useState<string | null>(null);
     const [editingId, setEditingId] = useState<string | null>(null);
     const requestController = useRef<AbortController | null>(null);
 
@@ -342,9 +340,7 @@ export default function AmpereDashboard() {
         const controller = new AbortController();
         requestController.current = controller;
         setDashboard({status: 'loading'});
-        setLimitInput('20.0');
         setLimitTenths(200);
-        setLimitError(null);
         setEditingId(null);
         void requestCatalog(controller.signal)
             .then((appliances) => {
@@ -363,14 +359,6 @@ export default function AmpereDashboard() {
         () => dashboard.status === 'ready' ? calculateSummary(dashboard.appliances, limitTenths) : null,
         [dashboard, limitTenths]
     );
-
-    const updateLimit = (value: string) => {
-        setLimitInput(value);
-        const parsed = parseAmpsTenths(value);
-        const error = validateLimitTenths(parsed);
-        setLimitError(error);
-        if (error === null && parsed !== null) setLimitTenths(parsed);
-    };
 
     const updateAppliance = (id: string, update: (appliance: Appliance) => Appliance) => {
         setDashboard((current) => current.status === 'ready'
@@ -440,25 +428,18 @@ export default function AmpereDashboard() {
                             <div className="amp-limit-copy">
                                 <h2 id="limit-heading">上限アンペア数</h2>
                             </div>
-                            <div className="amp-limit-form">
+                            <div className="amp-limit-controls">
                                 <label className="amp-sr-only" htmlFor="limit-amps">上限アンペア数</label>
-                                <div className="amp-input-with-unit amp-limit-input">
-                                    <input
-                                        id="limit-amps"
-                                        type="number"
-                                        min="0.1"
-                                        max="60"
-                                        step="0.1"
-                                        inputMode="decimal"
-                                        value={limitInput}
-                                        onChange={(event) => updateLimit(event.target.value)}
-                                        aria-invalid={Boolean(limitError)}
-                                        aria-describedby={limitError ? 'limit-error' : undefined}
-                                    />
-                                    <span>A</span>
-                                </div>
-                                {limitError &&
-                                    <p className="amp-error amp-limit-error" id="limit-error">{limitError}</p>}
+                                <select
+                                    className="amp-limit-select"
+                                    id="limit-amps"
+                                    value={limitTenths}
+                                    onChange={(event) => setLimitTenths(Number(event.target.value))}
+                                >
+                                    {LIMIT_OPTIONS_TENTHS.map((tenths) => (
+                                        <option key={tenths} value={tenths}>{tenths / 10}A</option>
+                                    ))}
+                                </select>
                             </div>
                         </section>
 

@@ -38,16 +38,30 @@ describe('Home', () => {
         expect(screen.getByText('（12.5%）')).toBeInTheDocument();
         expect(screen.getByText('(12.5%)')).toBeInTheDocument();
 
-        const limitInput = screen.getByRole('spinbutton', {name: '上限アンペア数'});
-        expect(limitInput).toHaveAttribute('step', '0.1');
-        expect(limitInput).toHaveAttribute('min', '0.1');
-        expect(limitInput).toHaveAttribute('max', '60');
-        fireEvent.change(limitInput, {target: {value: '2.5'}});
-        expect(screen.getByText('＝ 上限到達')).toBeInTheDocument();
-        expect(screen.getByText('残り 0.0A')).toBeInTheDocument();
-        expect(screen.getByText('（100.0%）')).toBeInTheDocument();
-        expect(screen.getByText('(100.0%)')).toBeInTheDocument();
-        expect(screen.getByRole('img')).toHaveAccessibleName(/上限到達/);
+        const limitSelect = screen.getByRole('combobox', {name: '上限アンペア数'});
+        fireEvent.change(limitSelect, {target: {value: '100'}});
+        expect(screen.getByText('✓ 上限内')).toBeInTheDocument();
+        expect(screen.getByText('残り 7.5A')).toBeInTheDocument();
+        expect(screen.getByText('（25.0%）')).toBeInTheDocument();
+        expect(screen.getByText('(25.0%)')).toBeInTheDocument();
+        expect(screen.getByRole('img')).toHaveAccessibleName(/上限内/);
+    });
+
+    it('offers upper limits from 10A to 60A in 10A increments', async () => {
+        jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(catalog));
+        render(<Home/>, {reactStrictMode: false});
+        await screen.findByRole('heading', {name: '家電一覧'});
+
+        const limitSelect = screen.getByRole('combobox', {name: '上限アンペア数'});
+        expect(limitSelect).toHaveValue('200');
+        expect(within(limitSelect).getAllByRole('option').map((option) => option.textContent)).toEqual([
+            '10A',
+            '20A',
+            '30A',
+            '40A',
+            '50A',
+            '60A',
+        ]);
     });
 
     it('includes the refrigerator, air conditioner and PC appliances in usage by default', async () => {
@@ -118,16 +132,6 @@ describe('Home', () => {
         fireEvent.click(screen.getByRole('switch', {name: '扇風機を起動中にする'}));
         expect(screen.getByRole('switch', {name: '扇風機を起動中にする'})).toHaveAttribute('aria-checked', 'true');
         expect(screen.getByRole('heading', {name: '2.8A'})).toBeInTheDocument();
-    });
-
-    it('keeps the committed limit when a non-tenth value is rejected', async () => {
-        jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(catalog));
-        render(<Home/>, {reactStrictMode: false});
-        await screen.findByRole('heading', {name: '家電一覧'});
-        fireEvent.change(screen.getByRole('spinbutton', {name: '上限アンペア数'}), {target: {value: '2.05'}});
-
-        expect(screen.getByText('0.1A刻みの数値を入力してください。')).toBeInTheDocument();
-        expect(screen.getByText('残り 20.0A')).toBeInTheDocument();
     });
 
     it('explains that the appliance value is capped to preserve exact totals', async () => {

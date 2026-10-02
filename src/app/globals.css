@@ -155,12 +155,23 @@ input:focus-visible {
     font-size: 0.82rem;
 }
 
-.amp-limit-form {
+.amp-limit-controls {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: flex-end;
     gap: 0.55rem;
+}
+
+.amp-limit-select {
+    width: 130px;
+    min-height: 42px;
+    padding: 0.62rem 0.75rem;
+    border: 1px solid var(--amp-border);
+    border-radius: 0.65rem;
+    background: var(--amp-surface);
+    color: var(--amp-text);
+    font: inherit;
 }
 
 .amp-input-with-unit {
@@ -191,16 +202,6 @@ input:focus-visible {
 
 .amp-input-with-unit span {
     color: var(--amp-muted);
-}
-
-.amp-limit-input {
-    width: 130px;
-}
-
-.amp-limit-error {
-    flex-basis: 100%;
-    margin: 0;
-    text-align: right;
 }
 
 .amp-button {
@@ -676,13 +677,9 @@ input:focus-visible {
         flex-direction: column;
     }
 
-    .amp-limit-form {
+    .amp-limit-controls {
         width: 100%;
         justify-content: flex-start;
-    }
-
-    .amp-limit-error {
-        text-align: left;
     }
 
     .amp-status {

@@ -4,7 +4,6 @@ import {
     MAX_APPLIANCE_AMPS_TENTHS,
     MAX_APPLIANCES,
     parseAmpsTenths,
-    validateLimitTenths,
 } from '../../../../src/lib/ampere/validation';
 
 describe('ampere validation', () => {
@@ -21,11 +20,7 @@ describe('ampere validation', () => {
         expect(parseAmpsTenths(input)).toBeNull();
     });
 
-    it('checks limit boundaries and formats tenths', () => {
-        expect(validateLimitTenths(1)).toBeNull();
-        expect(validateLimitTenths(600)).toBeNull();
-        expect(validateLimitTenths(0)).toContain('0.1A');
-        expect(validateLimitTenths(601)).toContain('60.0A');
+    it('formats tenths', () => {
         expect(formatAmps(123)).toBe('12.3A');
     });
 
