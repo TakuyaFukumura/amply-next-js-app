@@ -466,7 +466,6 @@ export default function AmpereDashboard() {
                                 <strong>
                                     {summary.status === 'within' ? '✓ 上限内' : summary.status === 'reached' ? '＝ 上限到達' : '！ 上限超過'}
                                 </strong>
-                                <span>上限 {formatAmps(limitTenths)}</span>
                                 {summary.status !== 'exceeded' &&
                                     <span>残り {formatAmps(summary.remainingTenths)}</span>}
                                 {summary.status === 'exceeded' &&
