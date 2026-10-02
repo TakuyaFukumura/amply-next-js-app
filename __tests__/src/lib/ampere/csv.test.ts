@@ -76,6 +76,7 @@ describe('parseCatalog', () => {
         expect(rows.find((row) => row.name === '冷蔵庫')?.enabled).toBe(true);
         expect(rows.filter((row) => row.name !== '冷蔵庫').every((row) => !row.enabled)).toBe(true);
         expect(rows.every((row) => row.startupAmpsTenths === null)).toBe(true);
+        expect(rows.find((row) => row.name === '冷蔵庫')?.note).toContain('200L級を想定した目安');
         expect(rows.find((row) => row.name === 'ノートPC')?.note).toContain('0.1A刻みに切り上げた目安');
         expect(rows.find((row) => row.name === 'ルーター')?.note).toContain('0.1A刻みに切り上げた目安');
     });

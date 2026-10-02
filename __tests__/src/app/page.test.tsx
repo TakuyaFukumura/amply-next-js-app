@@ -3,7 +3,7 @@ import Home from '../../../src/app/page';
 import {formatAmps, MAX_APPLIANCE_AMPS_TENTHS, MAX_APPLIANCES} from '../../../src/lib/ampere/validation';
 
 const catalog = `name,runningAmps,startupAmps,initiallyEnabled,note
-冷蔵庫,2.5,,false,450L級の目安
+冷蔵庫,2.5,,false,200L級の目安
 電子レンジ,15.0,,false,加熱時の目安`;
 
 const createResponse = (body: string, status = 200): Response => ({
