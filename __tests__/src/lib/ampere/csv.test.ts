@@ -76,10 +76,11 @@ describe('parseCatalog', () => {
         expect(rows.map((row) => row.startupAmpsTenths)).toEqual([75, 120, 10, 140, 150, 70, 150, 130, 150, 140, 15, 15, 30, 5]);
         expect(rows.find((row) => row.name === '冷蔵庫')?.enabled).toBe(true);
         expect(rows.find((row) => row.name === 'エアコン')?.enabled).toBe(true);
-        expect(rows.find((row) => row.name === 'LED照明')?.enabled).toBe(false);
+        expect(rows.find((row) => row.name === 'LED照明')?.enabled).toBe(true);
         expect(rows.find((row) => row.name === 'ノートPC')?.enabled).toBe(true);
         expect(rows.find((row) => row.name === 'デスクトップPC')?.enabled).toBe(true);
-        expect(rows.filter((row) => !['冷蔵庫', 'エアコン', 'ノートPC', 'デスクトップPC'].includes(row.name))
+        expect(rows.find((row) => row.name === 'ルーター')?.enabled).toBe(true);
+        expect(rows.filter((row) => !['冷蔵庫', 'エアコン', 'LED照明', 'ノートPC', 'デスクトップPC', 'ルーター'].includes(row.name))
             .every((row) => !row.enabled)).toBe(true);
         expect(rows.find((row) => row.name === '冷蔵庫')?.note).toContain('200L級を想定した目安');
         expect(rows.find((row) => row.name === 'エアコン')?.note).toContain('100V・6畳用');
