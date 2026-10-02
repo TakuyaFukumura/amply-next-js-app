@@ -33,6 +33,7 @@ describe('Home', () => {
         expect(totalHeading.compareDocumentPosition(safetyNote) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
         fireEvent.click(screen.getByRole('switch', {name: '冷蔵庫を集計に含める'}));
         expect(screen.getByRole('heading', {name: '2.5A'})).toBeInTheDocument();
+        expect(screen.getByText('(12.5%)')).toBeInTheDocument();
 
         const limitInput = screen.getByRole('spinbutton', {name: '上限アンペア数'});
         expect(limitInput).toHaveAttribute('step', '0.1');
@@ -42,6 +43,7 @@ describe('Home', () => {
         fireEvent.click(screen.getByRole('button', {name: '適用'}));
         expect(screen.getByText('＝ 上限到達')).toBeInTheDocument();
         expect(screen.getByText('残り 0.0A')).toBeInTheDocument();
+        expect(screen.getByText('(100.0%)')).toBeInTheDocument();
         expect(screen.getByRole('img')).toHaveAccessibleName(/上限到達/);
     });
 

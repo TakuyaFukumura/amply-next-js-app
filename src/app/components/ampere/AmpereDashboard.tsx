@@ -99,7 +99,12 @@ function AmpereChart({appliances, limitTenths, totalTenths, status}: {
                             <span className="amp-legend-swatch" style={{backgroundColor: COLORS[index % COLORS.length]}}
                                   aria-hidden="true"/>
                             <span>{group.name}{group.applianceCount > 1 ? ` (${group.applianceCount}台)` : ''}</span>
-                            <strong>{formatAmps(group.ampsTenths)}</strong>
+                            <strong>
+                                {formatAmps(group.ampsTenths)}
+                                <span className="amp-legend-share">
+                                    ({(group.ampsTenths / limitTenths * 100).toFixed(1)}%)
+                                </span>
+                            </strong>
                         </li>
                     ))}
                 </ul>

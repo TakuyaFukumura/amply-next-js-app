@@ -429,6 +429,12 @@ input:focus-visible {
     white-space: nowrap;
 }
 
+.amp-legend-share {
+    margin-left: 0.35rem;
+    color: var(--amp-muted);
+    font-weight: 500;
+}
+
 .amp-legend-swatch {
     flex: 0 0 11px;
     width: 11px;
