@@ -241,9 +241,11 @@ function ApplianceList({appliances, onToggle, onEdit}: {
     onToggle: (id: string, field: 'enabled' | 'starting') => void;
     onEdit: (appliance: Appliance) => void;
 }) {
-    const [enabledOnly, setEnabledOnly] = useState(false);
+    const [applianceFilter, setApplianceFilter] = useState<'all' | 'enabled' | 'disabled'>('all');
     const [hideNotes, setHideNotes] = useState(false);
-    const visibleAppliances = enabledOnly ? appliances.filter((appliance) => appliance.enabled) : appliances;
+    const visibleAppliances = applianceFilter === 'all'
+        ? appliances
+        : appliances.filter((appliance) => appliance.enabled === (applianceFilter === 'enabled'));
 
     return (
         <section className="amp-card" aria-labelledby="appliances-heading">
@@ -258,10 +260,18 @@ function ApplianceList({appliances, onToggle, onEdit}: {
                     <label className="amp-appliance-filter">
                         <input
                             type="checkbox"
-                            checked={enabledOnly}
-                            onChange={(event) => setEnabledOnly(event.target.checked)}
+                            checked={applianceFilter === 'enabled'}
+                            onChange={(event) => setApplianceFilter(event.target.checked ? 'enabled' : 'all')}
                         />
                         使用中のみ表示
+                    </label>
+                    <label className="amp-appliance-filter">
+                        <input
+                            type="checkbox"
+                            checked={applianceFilter === 'disabled'}
+                            onChange={(event) => setApplianceFilter(event.target.checked ? 'disabled' : 'all')}
+                        />
+                        未使用のみ表示
                     </label>
                     <label className="amp-appliance-filter">
                         <input
@@ -276,7 +286,9 @@ function ApplianceList({appliances, onToggle, onEdit}: {
             {appliances.length === 0 ? (
                 <p className="amp-empty">家電がありません。下の「追加」フォームから登録できます。</p>
             ) : visibleAppliances.length === 0 ? (
-                <p className="amp-empty" role="status">使用中の家電はありません。</p>
+                <p className="amp-empty" role="status">
+                    {applianceFilter === 'enabled' ? '使用中の家電はありません。' : '未使用の家電はありません。'}
+                </p>
             ) : (
                 <ul className="amp-appliance-list">
                     {visibleAppliances.map((appliance) => {

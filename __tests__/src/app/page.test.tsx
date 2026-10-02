@@ -115,6 +115,36 @@ describe('Home', () => {
         expect(screen.getByRole('heading', {name: '電子レンジ'})).toBeInTheDocument();
     });
 
+    it('filters the appliance list to unused appliances and keeps the filters mutually exclusive', async () => {
+        const partlyEnabledCatalog = catalog.replace('冷蔵庫,2.5,,false', '冷蔵庫,2.5,,true');
+        jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(partlyEnabledCatalog));
+        render(<Home/>, {reactStrictMode: false});
+        await screen.findByRole('heading', {name: '登録家電一覧'});
+
+        const enabledFilter = screen.getByRole('checkbox', {name: '使用中のみ表示'});
+        const unusedFilter = screen.getByRole('checkbox', {name: '未使用のみ表示'});
+        fireEvent.click(unusedFilter);
+
+        expect(unusedFilter).toBeChecked();
+        expect(enabledFilter).not.toBeChecked();
+        expect(screen.queryByRole('heading', {name: '冷蔵庫'})).not.toBeInTheDocument();
+        expect(screen.getByRole('heading', {name: 'エアコン'})).toBeInTheDocument();
+        expect(screen.getByRole('heading', {name: '電子レンジ'})).toBeInTheDocument();
+        expect(screen.getByText('3 台')).toBeInTheDocument();
+
+        fireEvent.click(screen.getByRole('switch', {name: 'エアコンを集計に含める'}));
+        expect(screen.queryByRole('heading', {name: 'エアコン'})).not.toBeInTheDocument();
+        fireEvent.click(screen.getByRole('switch', {name: '電子レンジを集計に含める'}));
+        expect(screen.getByText('未使用の家電はありません。')).toBeInTheDocument();
+
+        fireEvent.click(enabledFilter);
+        expect(enabledFilter).toBeChecked();
+        expect(unusedFilter).not.toBeChecked();
+        expect(screen.getByRole('heading', {name: '冷蔵庫'})).toBeInTheDocument();
+        expect(screen.getByRole('heading', {name: 'エアコン'})).toBeInTheDocument();
+        expect(screen.getByRole('heading', {name: '電子レンジ'})).toBeInTheDocument();
+    });
+
     it('shows configured running and startup amps separately from current usage', async () => {
         const configuredCatalog = `name,runningAmps,startupAmps,initiallyEnabled,note
 冷蔵庫,2.5,4.0,false,目安
