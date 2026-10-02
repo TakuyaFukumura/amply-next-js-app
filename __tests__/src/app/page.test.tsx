@@ -32,17 +32,23 @@ describe('Home', () => {
         expect(screen.getByRole('img')).toHaveAccessibleName(/上限到達/);
     });
 
-    it('includes the refrigerator and air conditioner in usage by default', async () => {
-        const initiallyEnabledCatalog = catalog
-            .replace('冷蔵庫,2.5,,false', '冷蔵庫,2.5,,true')
-            .replace('エアコン,6.0,,false', 'エアコン,6.0,,true');
+    it('includes the refrigerator, air conditioner and PC appliances in usage by default', async () => {
+        const initiallyEnabledCatalog = [
+            catalog
+                .replace('冷蔵庫,2.5,,false', '冷蔵庫,2.5,,true')
+                .replace('エアコン,6.0,,false', 'エアコン,6.0,,true'),
+            'ノートPC,0.7,,true,65W級の目安',
+            'デスクトップPC,1.5,,true,150W級の目安',
+        ].join('\n');
         jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(initiallyEnabledCatalog));
         render(<Home/>, {reactStrictMode: false});
         await screen.findByRole('heading', {name: '家電一覧'});
 
         expect(screen.getByRole('switch', {name: '冷蔵庫を集計に含める'})).toHaveAttribute('aria-checked', 'true');
         expect(screen.getByRole('switch', {name: 'エアコンを集計に含める'})).toHaveAttribute('aria-checked', 'true');
-        expect(screen.getByRole('heading', {name: '8.5A'})).toBeInTheDocument();
+        expect(screen.getByRole('switch', {name: 'ノートPCを集計に含める'})).toHaveAttribute('aria-checked', 'true');
+        expect(screen.getByRole('switch', {name: 'デスクトップPCを集計に含める'})).toHaveAttribute('aria-checked', 'true');
+        expect(screen.getByRole('heading', {name: '10.7A'})).toBeInTheDocument();
         expect(screen.getByRole('switch', {name: '冷蔵庫を起動中にする'})).toHaveAttribute('aria-checked', 'false');
     });
 

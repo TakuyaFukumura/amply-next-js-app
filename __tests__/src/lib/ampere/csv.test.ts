@@ -75,7 +75,10 @@ describe('parseCatalog', () => {
         expect(rows.map((row) => row.runningAmpsTenths)).toEqual([25, 60, 150, 50, 130, 100, 130, 120, 140, 15, 7, 15, 2]);
         expect(rows.find((row) => row.name === '冷蔵庫')?.enabled).toBe(true);
         expect(rows.find((row) => row.name === 'エアコン')?.enabled).toBe(true);
-        expect(rows.filter((row) => !['冷蔵庫', 'エアコン'].includes(row.name)).every((row) => !row.enabled)).toBe(true);
+        expect(rows.find((row) => row.name === 'ノートPC')?.enabled).toBe(true);
+        expect(rows.find((row) => row.name === 'デスクトップPC')?.enabled).toBe(true);
+        expect(rows.filter((row) => !['冷蔵庫', 'エアコン', 'ノートPC', 'デスクトップPC'].includes(row.name))
+            .every((row) => !row.enabled)).toBe(true);
         expect(rows.every((row) => row.startupAmpsTenths === null)).toBe(true);
         expect(rows.find((row) => row.name === '冷蔵庫')?.note).toContain('200L級を想定した目安');
         expect(rows.find((row) => row.name === 'エアコン')?.note).toContain('100V・6畳用');
