@@ -2,8 +2,8 @@ import type {Appliance} from './types';
 import {
     formatAmps,
     isValidApplianceAmpsTenths,
-    MAX_APPLIANCES,
     MAX_APPLIANCE_AMPS_TENTHS,
+    MAX_APPLIANCES,
     parseAmpsTenths,
 } from './validation';
 

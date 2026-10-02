@@ -6,17 +6,17 @@ import {CatalogError, parseCatalog} from '../../../lib/ampere/csv';
 import {
     formatAmps,
     isValidApplianceAmpsTenths,
-    MAX_APPLIANCES,
     MAX_APPLIANCE_AMPS_TENTHS,
+    MAX_APPLIANCES,
     parseAmpsTenths,
     validateLimitTenths,
 } from '../../../lib/ampere/validation';
 import type {AmpereSummary, Appliance, ApplianceInput} from '../../../lib/ampere/types';
 
 type DashboardState =
-    | {status: 'loading'}
-    | {status: 'error'; message: string}
-    | {status: 'ready'; appliances: Appliance[]};
+    | { status: 'loading' }
+    | { status: 'error'; message: string }
+    | { status: 'ready'; appliances: Appliance[] };
 
 const COLORS = ['#147d71', '#3975c6', '#bc6b28', '#8256a6', '#c04c64', '#558c39', '#277f9f', '#9c7126', '#5465a8', '#a64f82', '#617c7c'];
 
@@ -83,7 +83,7 @@ function AmpereChart({appliances, limitTenths, totalTenths, status}: {
                             title={`${group.name}: ${formatAmps(group.ampsTenths)}`}
                         />
                     ))}
-                    <span className="amp-limit-marker" style={{left: `${limitPosition}%`}} aria-hidden="true" />
+                    <span className="amp-limit-marker" style={{left: `${limitPosition}%`}} aria-hidden="true"/>
                 </div>
                 <div className="amp-axis" aria-hidden="true">
                     {uniqueTicks.map((tick) => (
@@ -92,13 +92,14 @@ function AmpereChart({appliances, limitTenths, totalTenths, status}: {
                         </span>
                     ))}
                 </div>
-                <p className="amp-marker-key"><span aria-hidden="true" />破線: 上限 {formatAmps(limitTenths)}</p>
+                <p className="amp-marker-key"><span aria-hidden="true"/>破線: 上限 {formatAmps(limitTenths)}</p>
             </div>
             {groups.length > 0 ? (
                 <ul className="amp-legend" aria-label="グラフの凡例">
                     {groups.map((group, index) => (
                         <li key={group.id}>
-                            <span className="amp-legend-swatch" style={{backgroundColor: COLORS[index % COLORS.length]}} aria-hidden="true" />
+                            <span className="amp-legend-swatch" style={{backgroundColor: COLORS[index % COLORS.length]}}
+                                  aria-hidden="true"/>
                             <span>{group.name}{group.applianceCount > 1 ? ` (${group.applianceCount}台)` : ''}</span>
                             <strong>{formatAmps(group.ampsTenths)}</strong>
                         </li>
@@ -210,12 +211,14 @@ function ApplianceEditor({appliances, editing, onCancel, onSave}: {
                 </label>
                 <label className="amp-field amp-field-wide">
                     <span>メモ <span className="amp-optional">任意</span></span>
-                    <input value={note} onChange={(event) => setNote(event.target.value)} />
+                    <input value={note} onChange={(event) => setNote(event.target.value)}/>
                 </label>
                 {errors.limit && <p className="amp-error amp-field-wide" role="alert">{errors.limit}</p>}
                 <div className="amp-form-actions amp-field-wide">
-                    <button className="amp-button amp-button-primary" type="submit">{editing ? '変更を保存' : '家電を追加'}</button>
-                    {editing && <button className="amp-button amp-button-secondary" type="button" onClick={onCancel}>編集をキャンセル</button>}
+                    <button className="amp-button amp-button-primary"
+                            type="submit">{editing ? '変更を保存' : '家電を追加'}</button>
+                    {editing && <button className="amp-button amp-button-secondary" type="button"
+                                        onClick={onCancel}>編集をキャンセル</button>}
                 </div>
             </form>
         </section>
@@ -274,7 +277,7 @@ function ApplianceList({appliances, onToggle, onEdit, onDelete}: {
                                         className={`amp-switch ${appliance.enabled ? 'is-on' : ''}`}
                                         onClick={() => onToggle(appliance.id, 'enabled')}
                                     >
-                                        <span aria-hidden="true" />使用中
+                                        <span aria-hidden="true"/>使用中
                                     </button>
                                     <button
                                         type="button"
@@ -284,10 +287,14 @@ function ApplianceList({appliances, onToggle, onEdit, onDelete}: {
                                         className={`amp-switch ${appliance.starting ? 'is-on' : ''}`}
                                         onClick={() => onToggle(appliance.id, 'starting')}
                                     >
-                                        <span aria-hidden="true" />起動中
+                                        <span aria-hidden="true"/>起動中
                                     </button>
-                                    <button className="amp-text-button" type="button" onClick={() => onEdit(appliance)}>編集</button>
-                                    <button className="amp-text-button amp-danger-text" type="button" onClick={() => onDelete(appliance.id)}>削除</button>
+                                    <button className="amp-text-button" type="button"
+                                            onClick={() => onEdit(appliance)}>編集
+                                    </button>
+                                    <button className="amp-text-button amp-danger-text" type="button"
+                                            onClick={() => onDelete(appliance.id)}>削除
+                                    </button>
                                 </div>
                             </li>
                         );
@@ -360,7 +367,10 @@ export default function AmpereDashboard() {
 
     const updateAppliance = (id: string, update: (appliance: Appliance) => Appliance) => {
         setDashboard((current) => current.status === 'ready'
-            ? {...current, appliances: current.appliances.map((appliance) => appliance.id === id ? update(appliance) : appliance)}
+            ? {
+                ...current,
+                appliances: current.appliances.map((appliance) => appliance.id === id ? update(appliance) : appliance)
+            }
             : current);
     };
 
@@ -403,7 +413,7 @@ export default function AmpereDashboard() {
 
                 {dashboard.status === 'loading' && (
                     <section className="amp-card amp-state-card" aria-live="polite">
-                        <span className="amp-spinner" aria-hidden="true" />
+                        <span className="amp-spinner" aria-hidden="true"/>
                         <p>家電カタログを読み込み中...</p>
                     </section>
                 )}
@@ -445,11 +455,13 @@ export default function AmpereDashboard() {
                                     <span>A</span>
                                 </div>
                                 <button className="amp-button amp-button-primary" type="submit">適用</button>
-                                {limitError && <p className="amp-error amp-limit-error" id="limit-error">{limitError}</p>}
+                                {limitError &&
+                                    <p className="amp-error amp-limit-error" id="limit-error">{limitError}</p>}
                             </form>
                         </section>
 
-                        <section className={`amp-summary amp-summary-${summary.status}`} aria-live="polite" aria-labelledby="summary-heading">
+                        <section className={`amp-summary amp-summary-${summary.status}`} aria-live="polite"
+                                 aria-labelledby="summary-heading">
                             <div>
                                 <p className="amp-eyebrow">現在の合計</p>
                                 <h2 id="summary-heading">{formatAmps(summary.totalTenths)}</h2>
@@ -459,8 +471,10 @@ export default function AmpereDashboard() {
                                     {summary.status === 'within' ? '✓ 上限内' : summary.status === 'reached' ? '＝ 上限到達' : '！ 上限超過'}
                                 </strong>
                                 <span>上限 {formatAmps(limitTenths)}</span>
-                                {summary.status !== 'exceeded' && <span>残り {formatAmps(summary.remainingTenths)}</span>}
-                                {summary.status === 'exceeded' && <span>超過 {formatAmps(-summary.remainingTenths)}</span>}
+                                {summary.status !== 'exceeded' &&
+                                    <span>残り {formatAmps(summary.remainingTenths)}</span>}
+                                {summary.status === 'exceeded' &&
+                                    <span>超過 {formatAmps(-summary.remainingTenths)}</span>}
                             </div>
                         </section>
 
@@ -479,11 +493,17 @@ export default function AmpereDashboard() {
                         />
                         <ApplianceList
                             appliances={dashboard.appliances}
-                            onToggle={(id, field) => updateAppliance(id, (appliance) => ({...appliance, [field]: !appliance[field]}))}
+                            onToggle={(id, field) => updateAppliance(id, (appliance) => ({
+                                ...appliance,
+                                [field]: !appliance[field]
+                            }))}
                             onEdit={(appliance) => setEditingId(appliance.id)}
                             onDelete={(id) => {
                                 setDashboard((current) => current.status === 'ready'
-                                    ? {...current, appliances: current.appliances.filter((appliance) => appliance.id !== id)}
+                                    ? {
+                                        ...current,
+                                        appliances: current.appliances.filter((appliance) => appliance.id !== id)
+                                    }
                                     : current);
                                 if (editingId === id) setEditingId(null);
                             }}
