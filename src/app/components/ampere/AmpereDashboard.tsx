@@ -467,10 +467,12 @@ export default function AmpereDashboard() {
                                  aria-labelledby="summary-heading">
                             <div>
                                 <p className="amp-eyebrow">現在の合計</p>
-                                <h2 id="summary-heading">{formatAmps(summary.totalTenths)}</h2>
-                                <p className="amp-muted amp-summary-percentage">
-                                    上限の{formatLimitPercentage(summary.totalTenths, limitTenths)}%
-                                </p>
+                                <div className="amp-summary-total">
+                                    <h2 id="summary-heading">{formatAmps(summary.totalTenths)}</h2>
+                                    <span className="amp-summary-percentage">
+                                        （{formatLimitPercentage(summary.totalTenths, limitTenths)}%）
+                                    </span>
+                                </div>
                             </div>
                             <div className="amp-status">
                                 <strong>

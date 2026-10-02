@@ -250,9 +250,17 @@ input:focus-visible {
     overflow-wrap: anywhere;
 }
 
+.amp-summary-total {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+}
+
 .amp-summary-percentage {
-    margin: 0.45rem 0 0;
-    font-size: 0.9rem;
+    color: var(--amp-muted);
+    font-size: 0.95rem;
+    font-weight: 600;
+    white-space: nowrap;
 }
 
 .amp-summary-within {
