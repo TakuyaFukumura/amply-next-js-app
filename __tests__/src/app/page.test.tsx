@@ -64,6 +64,7 @@ describe('Home', () => {
         expect(fridgeRow).not.toBeNull();
         expect(within(fridgeRow as HTMLElement).getByText('運転中 2.5A・起動時 4.0A')).toBeInTheDocument();
         expect(within(fridgeRow as HTMLElement).getByText('0.0A')).toBeInTheDocument();
+        expect(within(fridgeRow as HTMLElement).queryByText(/現在の集計値/)).not.toBeInTheDocument();
 
         const microwaveRow = screen.getByRole('heading', {name: '電子レンジ'}).closest('li');
         expect(microwaveRow).not.toBeNull();

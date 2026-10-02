@@ -257,13 +257,13 @@ function ApplianceList({appliances, onToggle, onEdit, onDelete}: {
                                                 ? '未登録（運転中値を使用）'
                                                 : formatAmps(appliance.startupAmpsTenths)}
                                         </p>
-                                        <p>
-                                            {appliance.starting && appliance.startupAmpsTenths === null
-                                                ? appliance.enabled
+                                        {appliance.starting && appliance.startupAmpsTenths === null && (
+                                            <p>
+                                                {appliance.enabled
                                                     ? `起動中（起動時値未登録のため運転中値 ${formatAmps(appliance.runningAmpsTenths)} を使用）`
-                                                    : `起動中ですが無効のため集計されません。有効にすると運転中値 ${formatAmps(appliance.runningAmpsTenths)} を使用します。`
-                                                : `現在の集計値 ${formatAmps(amount)}`}
-                                        </p>
+                                                    : `起動中ですが無効のため集計されません。有効にすると運転中値 ${formatAmps(appliance.runningAmpsTenths)} を使用します。`}
+                                            </p>
+                                        )}
                                         {appliance.note && <p className="amp-appliance-note">{appliance.note}</p>}
                                     </div>
                                     <strong className="amp-appliance-value">{formatAmps(amount)}</strong>
