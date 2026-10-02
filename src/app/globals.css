@@ -250,6 +250,11 @@ input:focus-visible {
     overflow-wrap: anywhere;
 }
 
+.amp-summary-percentage {
+    margin: 0.45rem 0 0;
+    font-size: 0.9rem;
+}
+
 .amp-summary-within {
     border-color: #acdcd4;
     background: #e3f4f1;

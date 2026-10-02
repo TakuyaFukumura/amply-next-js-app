@@ -40,6 +40,10 @@ function formatChartAxisAmps(tenths: number): string {
     return formatAmps(tenths);
 }
 
+function formatLimitPercentage(ampsTenths: number, limitTenths: number): string {
+    return ((ampsTenths / limitTenths) * 100).toFixed(1);
+}
+
 function AmpereChart({appliances, limitTenths, totalTenths, status}: {
     appliances: Appliance[];
     limitTenths: number;
@@ -102,7 +106,7 @@ function AmpereChart({appliances, limitTenths, totalTenths, status}: {
                             <strong>
                                 {formatAmps(group.ampsTenths)}
                                 <span className="amp-legend-share">
-                                    ({(group.ampsTenths / limitTenths * 100).toFixed(1)}%)
+                                    ({formatLimitPercentage(group.ampsTenths, limitTenths)}%)
                                 </span>
                             </strong>
                         </li>
@@ -464,6 +468,9 @@ export default function AmpereDashboard() {
                             <div>
                                 <p className="amp-eyebrow">現在の合計</p>
                                 <h2 id="summary-heading">{formatAmps(summary.totalTenths)}</h2>
+                                <p className="amp-muted amp-summary-percentage">
+                                    上限の{formatLimitPercentage(summary.totalTenths, limitTenths)}%
+                                </p>
                             </div>
                             <div className="amp-status">
                                 <strong>
