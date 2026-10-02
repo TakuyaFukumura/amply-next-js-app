@@ -6,7 +6,6 @@ name: CI
 # ワークフローを実行するタイミング
 on:
   push:
-  pull_request:
 
 jobs:
   # コード品質チェックとビルドを行うジョブ
