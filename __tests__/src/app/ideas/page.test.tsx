@@ -10,6 +10,8 @@ describe('IdeasPage', () => {
         expect(screen.getByText(/出力Wと容量Whを確認する/)).toBeInTheDocument();
         expect(screen.getByText(/1,024Wh/)).toBeInTheDocument();
         expect(screen.getByText(/1,550W/)).toBeInTheDocument();
+        expect(screen.getByRole('heading', {name: '夜間に充電し、日中に使う'})).toBeInTheDocument();
+        expect(screen.getByText(/時間帯別料金プランでは費用を抑えられる可能性/)).toBeInTheDocument();
         expect(screen.getByText(/家庭の壁コンセントや分電盤につないで/)).toBeInTheDocument();
         const safetyHeading = screen.getByRole('heading', {name: '安全に使うために'});
         const assumptionsHeading = screen.getByRole('heading', {name: '試算に使うポータブル電源'});
