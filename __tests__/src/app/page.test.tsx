@@ -253,14 +253,20 @@ describe('Home', () => {
         expect(screen.getByRole('switch', {name: '冷蔵庫（編集）を集計に含める'})).toHaveAttribute('aria-checked', 'true');
         expect(screen.getByRole('switch', {name: '冷蔵庫（編集）を起動中にする'})).toHaveAttribute('aria-checked', 'true');
         expect(screen.getByRole('heading', {name: '4.0A'})).toBeInTheDocument();
+        expect(screen.queryByRole('button', {name: '削除'})).not.toBeInTheDocument();
 
         const fridgeRow = screen.getByRole('heading', {name: '冷蔵庫（編集）'}).closest('li');
         expect(fridgeRow).not.toBeNull();
-        fireEvent.click(within(fridgeRow as HTMLElement).getByRole('button', {name: '削除'}));
+        fireEvent.click(within(fridgeRow as HTMLElement).getByRole('button', {name: '編集'}));
+        expect(screen.getByRole('button', {name: '削除'})).toBeInTheDocument();
+        fireEvent.click(screen.getByRole('button', {name: '削除'}));
         expect(screen.queryByRole('heading', {name: '冷蔵庫（編集）'})).not.toBeInTheDocument();
+        expect(screen.getByRole('heading', {name: '電子レンジ'})).toBeInTheDocument();
+
         const microwaveRow = screen.getByRole('heading', {name: '電子レンジ'}).closest('li');
         expect(microwaveRow).not.toBeNull();
-        fireEvent.click(within(microwaveRow as HTMLElement).getByRole('button', {name: '削除'}));
+        fireEvent.click(within(microwaveRow as HTMLElement).getByRole('button', {name: '編集'}));
+        fireEvent.click(screen.getByRole('button', {name: '削除'}));
         expect(screen.queryByRole('heading', {name: '電子レンジ'})).not.toBeInTheDocument();
         expect(screen.getByText(/下の「家電を追加」フォーム/)).toBeInTheDocument();
     });

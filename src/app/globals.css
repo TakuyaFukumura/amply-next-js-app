@@ -231,6 +231,12 @@ input:focus-visible {
     color: var(--amp-text);
 }
 
+.amp-button-danger {
+    border-color: var(--amp-danger);
+    background: transparent;
+    color: var(--amp-danger);
+}
+
 .amp-summary {
     display: flex;
     justify-content: space-between;
@@ -506,6 +512,10 @@ input:focus-visible {
     display: flex;
     flex-wrap: wrap;
     gap: 0.6rem;
+}
+
+.amp-form-delete {
+    margin-left: auto;
 }
 
 .amp-appliance-list {

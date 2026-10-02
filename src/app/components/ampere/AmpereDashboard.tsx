@@ -119,10 +119,11 @@ function AmpereChart({appliances, limitTenths, totalTenths, status}: {
     );
 }
 
-function ApplianceEditor({appliances, editing, onCancel, onSave}: {
+function ApplianceEditor({appliances, editing, onCancel, onDelete, onSave}: {
     appliances: Appliance[];
     editing: Appliance | null;
     onCancel: () => void;
+    onDelete: (id: string) => void;
     onSave: (input: ApplianceInput) => void;
 }) {
     const [name, setName] = useState(editing?.name ?? '');
@@ -227,17 +228,18 @@ function ApplianceEditor({appliances, editing, onCancel, onSave}: {
                             type="submit">{editing ? '変更を保存' : '家電を追加'}</button>
                     {editing && <button className="amp-button amp-button-secondary" type="button"
                                         onClick={onCancel}>編集をキャンセル</button>}
+                    {editing && <button className="amp-button amp-button-danger amp-form-delete" type="button"
+                                        onClick={() => onDelete(editing.id)}>削除</button>}
                 </div>
             </form>
         </section>
     );
 }
 
-function ApplianceList({appliances, onToggle, onEdit, onDelete}: {
+function ApplianceList({appliances, onToggle, onEdit}: {
     appliances: Appliance[];
     onToggle: (id: string, field: 'enabled' | 'starting') => void;
     onEdit: (appliance: Appliance) => void;
-    onDelete: (id: string) => void;
 }) {
     return (
         <section className="amp-card" aria-labelledby="appliances-heading">
@@ -300,9 +302,6 @@ function ApplianceList({appliances, onToggle, onEdit, onDelete}: {
                                     <div className="amp-appliance-edit-actions">
                                         <button className="amp-text-button" type="button"
                                                 onClick={() => onEdit(appliance)}>編集
-                                        </button>
-                                        <button className="amp-text-button amp-danger-text" type="button"
-                                                onClick={() => onDelete(appliance.id)}>削除
                                         </button>
                                     </div>
                                 </div>
@@ -370,6 +369,16 @@ export default function AmpereDashboard() {
                 appliances: current.appliances.map((appliance) => appliance.id === id ? update(appliance) : appliance)
             }
             : current);
+    };
+
+    const deleteAppliance = (id: string) => {
+        setDashboard((current) => current.status === 'ready'
+            ? {
+                ...current,
+                appliances: current.appliances.filter((appliance) => appliance.id !== id)
+            }
+            : current);
+        setEditingId((current) => current === id ? null : current);
     };
 
     const editing = dashboard.status === 'ready'
@@ -490,21 +499,13 @@ export default function AmpereDashboard() {
                                 [field]: !appliance[field]
                             }))}
                             onEdit={(appliance) => setEditingId(appliance.id)}
-                            onDelete={(id) => {
-                                setDashboard((current) => current.status === 'ready'
-                                    ? {
-                                        ...current,
-                                        appliances: current.appliances.filter((appliance) => appliance.id !== id)
-                                    }
-                                    : current);
-                                if (editingId === id) setEditingId(null);
-                            }}
                         />
                         <ApplianceEditor
                             key={editingId ?? 'new'}
                             appliances={dashboard.appliances}
                             editing={editing}
                             onCancel={() => setEditingId(null)}
+                            onDelete={deleteAppliance}
                             onSave={saveAppliance}
                         />
                     </>
