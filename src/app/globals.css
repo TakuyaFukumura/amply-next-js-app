@@ -4,30 +4,32 @@
 
 :root {
     color-scheme: light;
-    --amp-bg: #ffffff;
+    --amp-bg: #f3f8f8;
+    --amp-page-glow: #e8f3f4;
     --amp-surface: #ffffff;
-    --amp-text: #171717;
-    --amp-muted: #737373;
-    --amp-border: #e5e5e5;
-    --amp-primary: #171717;
-    --amp-primary-dark: #404040;
-    --amp-soft: #f5f5f5;
+    --amp-text: #1c3038;
+    --amp-muted: #536d75;
+    --amp-border: #cfdee1;
+    --amp-primary: #0f766e;
+    --amp-primary-dark: #115e59;
+    --amp-soft: #eaf5f4;
     --amp-danger: #aa3442;
-    --amp-focus: #737373;
+    --amp-focus: #0e7490;
 }
 
 .dark {
     color-scheme: dark;
-    --amp-bg: #0a0a0a;
-    --amp-surface: #171717;
-    --amp-text: #ededed;
-    --amp-muted: #a3a3a3;
-    --amp-border: #404040;
-    --amp-primary: #ededed;
-    --amp-primary-dark: #d4d4d4;
-    --amp-soft: #171717;
+    --amp-bg: #111827;
+    --amp-page-glow: #162638;
+    --amp-surface: #1f2937;
+    --amp-text: #f1f5f9;
+    --amp-muted: #c1cbd8;
+    --amp-border: #3b4b60;
+    --amp-primary: #5eead4;
+    --amp-primary-dark: #99f6e4;
+    --amp-soft: #263548;
     --amp-danger: #ff9ba4;
-    --amp-focus: #a3a3a3;
+    --amp-focus: #67e8f9;
 }
 
 * {
@@ -59,7 +61,7 @@ input:focus-visible {
 .amp-page {
     min-height: calc(100vh - 4rem);
     padding: 2.5rem 1rem 4rem;
-    background: var(--amp-bg);
+    background: linear-gradient(145deg, var(--amp-bg), var(--amp-page-glow));
 }
 
 .amp-container {
@@ -119,7 +121,11 @@ input:focus-visible {
     border: 1px solid var(--amp-border);
     border-radius: 1.1rem;
     background: var(--amp-surface);
-    box-shadow: 0 8px 28px rgb(0 0 0 / 5%);
+    box-shadow: 0 12px 32px rgb(15 118 110 / 8%);
+}
+
+.dark .amp-card {
+    box-shadow: 0 14px 36px rgb(0 0 0 / 22%), 0 1px 0 rgb(94 234 212 / 5%);
 }
 
 .amp-section-heading {
@@ -257,7 +263,13 @@ input:focus-visible {
 }
 
 .amp-summary-within {
-    border-color: var(--amp-border);
+    border-color: #acdcd4;
+    background: #e3f4f1;
+}
+
+.dark .amp-summary-within {
+    border-color: #346c68;
+    background: #203e43;
 }
 
 .amp-summary-reached {
