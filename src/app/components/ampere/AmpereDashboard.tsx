@@ -172,7 +172,7 @@ function ApplianceEditor({appliances, editing, onCancel, onDelete, onSave}: {
             <div className="amp-section-heading">
                 <div>
                     <p className="amp-eyebrow">家電管理</p>
-                    <h2 id="editor-heading">{editing ? '家電を編集' : '家電を追加'}</h2>
+                    <h2 id="editor-heading">{editing ? '家電を編集' : '追加'}</h2>
                 </div>
                 <span className="amp-count">{appliances.length} / {MAX_APPLIANCES} 台</span>
             </div>
@@ -225,7 +225,7 @@ function ApplianceEditor({appliances, editing, onCancel, onDelete, onSave}: {
                 {errors.limit && <p className="amp-error amp-field-wide" role="alert">{errors.limit}</p>}
                 <div className="amp-form-actions amp-field-wide">
                     <button className="amp-button amp-button-primary"
-                            type="submit">{editing ? '変更を保存' : '家電を追加'}</button>
+                            type="submit">{editing ? '変更を保存' : '追加'}</button>
                     {editing && <button className="amp-button amp-button-secondary" type="button"
                                         onClick={onCancel}>編集をキャンセル</button>}
                     {editing && <button className="amp-button amp-button-danger amp-form-delete" type="button"
@@ -274,7 +274,7 @@ function ApplianceList({appliances, onToggle, onEdit}: {
                 </div>
             )}
             {appliances.length === 0 ? (
-                <p className="amp-empty">家電がありません。下の「家電を追加」フォームから登録できます。</p>
+                <p className="amp-empty">家電がありません。下の「追加」フォームから登録できます。</p>
             ) : visibleAppliances.length === 0 ? (
                 <p className="amp-empty" role="status">使用中の家電はありません。</p>
             ) : (

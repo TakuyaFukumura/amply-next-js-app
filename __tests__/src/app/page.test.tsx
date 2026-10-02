@@ -156,7 +156,7 @@ describe('Home', () => {
         fireEvent.change(screen.getByLabelText(/家電名/), {target: {value: '扇風機'}});
         fireEvent.change(screen.getByLabelText(/運転中アンペア数/), {target: {value: '1.2'}});
         fireEvent.change(screen.getByLabelText(/起動時アンペア数/), {target: {value: '2.8'}});
-        fireEvent.click(screen.getByRole('button', {name: '家電を追加'}));
+        fireEvent.click(screen.getByRole('button', {name: '追加'}));
 
         expect(screen.getByRole('switch', {name: '扇風機を集計に含める'})).toHaveAttribute('aria-checked', 'true');
         expect(screen.getByRole('heading', {name: '1.2A'})).toBeInTheDocument();
@@ -172,7 +172,7 @@ describe('Home', () => {
 
         fireEvent.change(screen.getByLabelText(/家電名/), {target: {value: '極端な値の家電'}});
         fireEvent.change(screen.getByLabelText(/運転中アンペア数/), {target: {value: '180143985094819.2'}});
-        fireEvent.click(screen.getByRole('button', {name: '家電を追加'}));
+        fireEvent.click(screen.getByRole('button', {name: '追加'}));
 
         expect(screen.getByText(/1台あたり.*以下で入力してください/)).toBeInTheDocument();
         expect(screen.queryByRole('heading', {name: '極端な値の家電'})).not.toBeInTheDocument();
@@ -210,7 +210,7 @@ describe('Home', () => {
         await screen.findByRole('heading', {name: '登録家電一覧'});
         fireEvent.change(screen.getByLabelText(/家電名/), {target: {value: '追加分'}});
         fireEvent.change(screen.getByLabelText(/運転中アンペア数/), {target: {value: '1.0'}});
-        fireEvent.click(screen.getByRole('button', {name: '家電を追加'}));
+        fireEvent.click(screen.getByRole('button', {name: '追加'}));
 
         expect(screen.getByRole('alert')).toHaveTextContent('登録上限の50台に達しています');
         expect(screen.getByText('50 / 50 台')).toBeInTheDocument();
@@ -300,6 +300,6 @@ describe('Home', () => {
         fireEvent.click(within(microwaveRow as HTMLElement).getByRole('button', {name: '電子レンジ'}));
         fireEvent.click(screen.getByRole('button', {name: '削除'}));
         expect(screen.queryByRole('heading', {name: '電子レンジ'})).not.toBeInTheDocument();
-        expect(screen.getByText(/下の「家電を追加」フォーム/)).toBeInTheDocument();
+        expect(screen.getByText(/下の「追加」フォーム/)).toBeInTheDocument();
     });
 });
