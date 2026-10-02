@@ -13,6 +13,7 @@
     --amp-primary-dark: #06675d;
     --amp-soft: #eaf5f2;
     --amp-danger: #aa3442;
+    --amp-focus: #087e70;
 }
 
 .dark {
@@ -26,6 +27,7 @@
     --amp-primary-dark: #3ca58f;
     --amp-soft: #243c36;
     --amp-danger: #ff9ba4;
+    --amp-focus: #5abfac;
 }
 
 * {
@@ -50,7 +52,7 @@ button {
 
 button:focus-visible,
 input:focus-visible {
-    outline: 3px solid #5abfac;
+    outline: 3px solid var(--amp-focus);
     outline-offset: 2px;
 }
 

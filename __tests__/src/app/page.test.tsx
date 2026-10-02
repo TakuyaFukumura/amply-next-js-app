@@ -90,6 +90,21 @@ describe('Home', () => {
         expect(screen.getByText('上限 20.0A')).toBeInTheDocument();
     });
 
+    it('explains that the appliance value is capped to preserve exact totals', async () => {
+        jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(catalog));
+        render(<Home />, {reactStrictMode: false});
+        await screen.findByRole('heading', {name: '家電一覧'});
+
+        expect(screen.getByText(/上限は20\.0Aに、家電はCSVの初期状態に戻ります/)).toBeInTheDocument();
+
+        fireEvent.change(screen.getByLabelText(/家電名/), {target: {value: '極端な値の家電'}});
+        fireEvent.change(screen.getByLabelText(/運転中アンペア数/), {target: {value: '180143985094819.2'}});
+        fireEvent.click(screen.getByRole('button', {name: '家電を追加'}));
+
+        expect(screen.getByText(/1台あたり.*以下で入力してください/)).toBeInTheDocument();
+        expect(screen.queryByRole('heading', {name: '極端な値の家電'})).not.toBeInTheDocument();
+    });
+
     it('rejects adding an appliance when the catalog already contains fifty', async () => {
         const fiftyAppliances = [
             'name,runningAmps,startupAmps,initiallyEnabled,note',

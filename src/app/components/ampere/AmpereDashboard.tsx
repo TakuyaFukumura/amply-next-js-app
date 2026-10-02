@@ -3,7 +3,14 @@
 import {useEffect, useMemo, useRef, useState} from 'react';
 import {calculateSummary, getApplianceAmpsTenths, getChartGroups} from '../../../lib/ampere/calculations';
 import {CatalogError, parseCatalog} from '../../../lib/ampere/csv';
-import {formatAmps, parseAmpsTenths, validateLimitTenths} from '../../../lib/ampere/validation';
+import {
+    formatAmps,
+    isValidApplianceAmpsTenths,
+    MAX_APPLIANCES,
+    MAX_APPLIANCE_AMPS_TENTHS,
+    parseAmpsTenths,
+    validateLimitTenths,
+} from '../../../lib/ampere/validation';
 import type {AmpereSummary, Appliance, ApplianceInput} from '../../../lib/ampere/types';
 
 type DashboardState =
@@ -11,7 +18,6 @@ type DashboardState =
     | {status: 'error'; message: string}
     | {status: 'ready'; appliances: Appliance[]};
 
-const APPLIANCE_LIMIT = 50;
 const COLORS = ['#147d71', '#3975c6', '#bc6b28', '#8256a6', '#c04c64', '#558c39', '#277f9f', '#9c7126', '#5465a8', '#a64f82', '#617c7c'];
 
 async function requestCatalog(signal: AbortSignal): Promise<Appliance[]> {
@@ -117,11 +123,16 @@ function ApplianceEditor({appliances, editing, onCancel, onSave}: {
 
         if (!name.trim()) nextErrors.name = '家電名を入力してください。';
         if (runningTenths === null) nextErrors.running = '0以上の0.1A刻みで入力してください（例: 2.5）。';
+        else if (!isValidApplianceAmpsTenths(runningTenths)) {
+            nextErrors.running = `1台あたり${formatAmps(MAX_APPLIANCE_AMPS_TENTHS)}以下で入力してください。`;
+        }
         if (startup.trim() !== '' && startupTenths === null) {
             nextErrors.startup = '空欄または0以上の0.1A刻みで入力してください。';
+        } else if (startupTenths !== null && !isValidApplianceAmpsTenths(startupTenths)) {
+            nextErrors.startup = `1台あたり${formatAmps(MAX_APPLIANCE_AMPS_TENTHS)}以下で入力してください。`;
         }
-        if (!editing && appliances.length >= APPLIANCE_LIMIT) {
-            nextErrors.limit = `登録上限の${APPLIANCE_LIMIT}台に達しています。`;
+        if (!editing && appliances.length >= MAX_APPLIANCES) {
+            nextErrors.limit = `登録上限の${MAX_APPLIANCES}台に達しています。`;
         }
         setErrors(nextErrors);
         if (Object.keys(nextErrors).length > 0 || runningTenths === null) return;
@@ -146,7 +157,7 @@ function ApplianceEditor({appliances, editing, onCancel, onSave}: {
                     <p className="amp-eyebrow">家電の管理</p>
                     <h2 id="editor-heading">{editing ? '家電を編集' : '家電を追加'}</h2>
                 </div>
-                <span className="amp-count">{appliances.length} / {APPLIANCE_LIMIT} 台</span>
+                <span className="amp-count">{appliances.length} / {MAX_APPLIANCES} 台</span>
             </div>
             <p className="amp-muted">初期カタログは参考値です。登録対象は100V家電です。</p>
             <form className="amp-form" onSubmit={submit} noValidate>
@@ -356,7 +367,7 @@ export default function AmpereDashboard() {
             setEditingId(null);
             return;
         }
-        if (dashboard.appliances.length >= APPLIANCE_LIMIT) return;
+        if (dashboard.appliances.length >= MAX_APPLIANCES) return;
         setDashboard({
             ...dashboard,
             appliances: [...dashboard.appliances, {
@@ -410,7 +421,7 @@ export default function AmpereDashboard() {
                             <div className="amp-limit-copy">
                                 <p className="amp-eyebrow">比較する基準</p>
                                 <h2 id="limit-heading">上限アンペア数</h2>
-                                <p className="amp-muted">この画面をリロードすると20.0Aに戻ります。</p>
+                                <p className="amp-muted">この画面をリロードすると、上限は20.0Aに、家電はCSVの初期状態に戻ります。</p>
                             </div>
                             <form className="amp-limit-form" onSubmit={applyLimit} noValidate>
                                 <label className="amp-sr-only" htmlFor="limit-amps">上限アンペア数</label>

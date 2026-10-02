@@ -1,4 +1,5 @@
 import {calculateSummary, getChartGroups} from '../../../../src/lib/ampere/calculations';
+import {MAX_APPLIANCE_AMPS_TENTHS, MAX_APPLIANCES} from '../../../../src/lib/ampere/validation';
 import type {Appliance} from '../../../../src/lib/ampere/types';
 
 const appliance = (id: string, name: string, value: number, options: Partial<Appliance> = {}): Appliance => ({
@@ -39,5 +40,16 @@ describe('ampere calculations', () => {
         expect(groups[10]).toMatchObject({name: 'その他', ampsTenths: 30, applianceCount: 2});
         expect(groups.reduce((sum, group) => sum + group.ampsTenths, 0))
             .toBe(calculateSummary(appliances, 200).totalTenths);
+    });
+
+    it('keeps totals within exact integer range for the maximum catalog size', () => {
+        const appliances = Array.from({length: MAX_APPLIANCES}, (_, index) =>
+            appliance(`id-${index}`, `家電${index}`, MAX_APPLIANCE_AMPS_TENTHS)
+        );
+        const total = calculateSummary(appliances, 200).totalTenths;
+
+        expect(total).toBe(MAX_APPLIANCES * MAX_APPLIANCE_AMPS_TENTHS);
+        expect(Number.isSafeInteger(total)).toBe(true);
+        expect(getChartGroups(appliances).reduce((sum, group) => sum + group.ampsTenths, 0)).toBe(total);
     });
 });

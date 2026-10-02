@@ -1,5 +1,11 @@
 import type {Appliance} from './types';
-import {parseAmpsTenths} from './validation';
+import {
+    formatAmps,
+    isValidApplianceAmpsTenths,
+    MAX_APPLIANCES,
+    MAX_APPLIANCE_AMPS_TENTHS,
+    parseAmpsTenths,
+} from './validation';
 
 const HEADER = ['name', 'runningAmps', 'startupAmps', 'initiallyEnabled', 'note'];
 
@@ -86,10 +92,10 @@ export function parseCatalog(source: string): Appliance[] {
 
     const [header, ...rows] = parseRecords(source);
     if (!header || header.fields.length !== HEADER.length || header.fields.some((value, index) => value !== HEADER[index])) {
-        throw new CatalogError(`CSV 1行目: ヘッダーは ${HEADER.join(',')} の順で指定してください。`);
+        throw new CatalogError(`CSV ${header?.line ?? 1}行目: ヘッダーは ${HEADER.join(',')} の順で指定してください。`);
     }
-    if (rows.length > 50) {
-        throw new CatalogError('CSVの家電数が登録上限の50台を超えています。');
+    if (rows.length > MAX_APPLIANCES) {
+        throw new CatalogError(`CSVの家電数が登録上限の${MAX_APPLIANCES}台を超えています。`);
     }
 
     return rows.map(({fields, line}, index) => {
@@ -101,12 +107,12 @@ export function parseCatalog(source: string): Appliance[] {
             throw new CatalogError(`CSV ${line}行目: 家電名を入力してください。`);
         }
         const runningAmpsTenths = parseAmpsTenths(running);
-        if (runningAmpsTenths === null) {
-            throw new CatalogError(`CSV ${line}行目: 運転中アンペア数は0以上の0.1A刻みで入力してください。`);
+        if (!isValidApplianceAmpsTenths(runningAmpsTenths)) {
+            throw new CatalogError(`CSV ${line}行目: 運転中アンペア数は0以上の0.1A刻みで、1台あたり${formatAmps(MAX_APPLIANCE_AMPS_TENTHS)}以下にしてください（${MAX_APPLIANCES}台分の合計精度を保つため）。`);
         }
         const startupAmpsTenths = startup === '' ? null : parseAmpsTenths(startup);
-        if (startup !== '' && startupAmpsTenths === null) {
-            throw new CatalogError(`CSV ${line}行目: 起動時アンペア数は空欄または0以上の0.1A刻みで入力してください。`);
+        if (startup !== '' && !isValidApplianceAmpsTenths(startupAmpsTenths)) {
+            throw new CatalogError(`CSV ${line}行目: 起動時アンペア数は空欄または0以上の0.1A刻みで、1台あたり${formatAmps(MAX_APPLIANCE_AMPS_TENTHS)}以下にしてください（${MAX_APPLIANCES}台分の合計精度を保つため）。`);
         }
         if (initiallyEnabled !== 'true' && initiallyEnabled !== 'false') {
             throw new CatalogError(`CSV ${line}行目: 初期有効状態はtrueまたはfalseにしてください。`);

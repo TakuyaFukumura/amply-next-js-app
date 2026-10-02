@@ -41,6 +41,18 @@ describe('parseCatalog', () => {
         expect(parseCatalog(csv)).toHaveLength(1);
     });
 
+    it('reports the actual line number for an invalid header after blank lines', () => {
+        expect(() => parseCatalog('\nwrong,header\n冷蔵庫,2.5,,false,目安')).toThrow('CSV 2行目');
+    });
+
+    it.each([
+        ['running', '180143985094819.2,,false'],
+        ['startup', '1.0,180143985094819.2,false'],
+    ])('rejects an appliance %s value that exceeds the safe aggregate range', (_field, values) => {
+        expect(() => parseCatalog(`name,runningAmps,startupAmps,initiallyEnabled,note\n冷蔵庫,${values},目安`))
+            .toThrow('CSV 2行目');
+    });
+
     it('accepts a trailing newline and validates the initial catalog as twelve disabled appliances', () => {
         const csv = [
             'name,runningAmps,startupAmps,initiallyEnabled,note',

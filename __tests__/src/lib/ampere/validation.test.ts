@@ -1,4 +1,11 @@
-import {formatAmps, parseAmpsTenths, validateLimitTenths} from '../../../../src/lib/ampere/validation';
+import {
+    formatAmps,
+    isValidApplianceAmpsTenths,
+    MAX_APPLIANCE_AMPS_TENTHS,
+    MAX_APPLIANCES,
+    parseAmpsTenths,
+    validateLimitTenths,
+} from '../../../../src/lib/ampere/validation';
 
 describe('ampere validation', () => {
     it.each([
@@ -20,5 +27,12 @@ describe('ampere validation', () => {
         expect(validateLimitTenths(0)).toContain('0.1A');
         expect(validateLimitTenths(601)).toContain('60.0A');
         expect(formatAmps(123)).toBe('12.3A');
+    });
+
+    it('caps each appliance so the maximum appliance count can be summed exactly', () => {
+        expect(MAX_APPLIANCES * MAX_APPLIANCE_AMPS_TENTHS).toBeLessThanOrEqual(Number.MAX_SAFE_INTEGER);
+        expect(isValidApplianceAmpsTenths(MAX_APPLIANCE_AMPS_TENTHS)).toBe(true);
+        expect(isValidApplianceAmpsTenths(MAX_APPLIANCE_AMPS_TENTHS + 1)).toBe(false);
+        expect(isValidApplianceAmpsTenths(null)).toBe(false);
     });
 });
