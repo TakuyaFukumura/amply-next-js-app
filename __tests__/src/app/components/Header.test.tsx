@@ -68,6 +68,7 @@ describe('Header', () => {
             const navigation = screen.getByRole('navigation', {name: 'メインメニュー'});
             expect(within(navigation).getByRole('link', {name: '計算'})).toHaveAttribute('href', '/');
             expect(within(navigation).getByRole('link', {name: '解説'})).toHaveAttribute('href', '/about');
+            expect(within(navigation).getByRole('link', {name: 'アイデア'})).toHaveAttribute('href', '/ideas');
         });
     });
 
