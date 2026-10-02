@@ -30,7 +30,11 @@ describe('Home', () => {
         fireEvent.click(screen.getByRole('switch', {name: '冷蔵庫を集計に含める'}));
         expect(screen.getByRole('heading', {name: '2.5A'})).toBeInTheDocument();
 
-        fireEvent.change(screen.getByRole('textbox', {name: '上限アンペア数'}), {target: {value: '2.5'}});
+        const limitInput = screen.getByRole('spinbutton', {name: '上限アンペア数'});
+        expect(limitInput).toHaveAttribute('step', '0.1');
+        expect(limitInput).toHaveAttribute('min', '0.1');
+        expect(limitInput).toHaveAttribute('max', '60');
+        fireEvent.change(limitInput, {target: {value: '2.5'}});
         fireEvent.click(screen.getByRole('button', {name: '適用'}));
         expect(screen.getByText('＝ 上限到達')).toBeInTheDocument();
         expect(screen.getByText('残り 0.0A')).toBeInTheDocument();
@@ -111,7 +115,7 @@ describe('Home', () => {
         jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(catalog));
         render(<Home/>, {reactStrictMode: false});
         await screen.findByRole('heading', {name: '家電一覧'});
-        fireEvent.change(screen.getByRole('textbox', {name: '上限アンペア数'}), {target: {value: '2.05'}});
+        fireEvent.change(screen.getByRole('spinbutton', {name: '上限アンペア数'}), {target: {value: '2.05'}});
         fireEvent.click(screen.getByRole('button', {name: '適用'}));
 
         expect(screen.getByText('0.1A刻みの数値を入力してください。')).toBeInTheDocument();

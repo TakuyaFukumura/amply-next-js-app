@@ -438,6 +438,10 @@ export default function AmpereDashboard() {
                                 <div className="amp-input-with-unit amp-limit-input">
                                     <input
                                         id="limit-amps"
+                                        type="number"
+                                        min="0.1"
+                                        max="60"
+                                        step="0.1"
                                         inputMode="decimal"
                                         value={limitInput}
                                         onChange={(event) => setLimitInput(event.target.value)}
