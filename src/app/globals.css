@@ -99,20 +99,9 @@ input:focus-visible {
 }
 
 .amp-safety-note {
-    display: flex;
-    gap: 0.65rem;
-    padding: 0.8rem 1rem;
-    border: 1px solid var(--amp-border);
-    border-radius: 0.85rem;
-    background: var(--amp-surface);
-    color: var(--amp-muted);
+    margin-top: 1rem;
     font-size: 0.88rem;
-    line-height: 1.6;
-}
-
-.amp-safety-note strong {
-    flex: 0 0 auto;
-    color: var(--amp-text);
+    text-align: right;
 }
 
 .amp-card {
@@ -148,8 +137,7 @@ input:focus-visible {
     margin-bottom: 0.15rem;
 }
 
-.amp-count,
-.amp-chart-total {
+.amp-count {
     color: var(--amp-muted);
     font-size: 0.9rem;
     font-weight: 650;
@@ -167,12 +155,23 @@ input:focus-visible {
     font-size: 0.82rem;
 }
 
-.amp-limit-form {
+.amp-limit-controls {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: flex-end;
     gap: 0.55rem;
+}
+
+.amp-limit-select {
+    width: 130px;
+    min-height: 42px;
+    padding: 0.62rem 0.75rem;
+    border: 1px solid var(--amp-border);
+    border-radius: 0.65rem;
+    background: var(--amp-surface);
+    color: var(--amp-text);
+    font: inherit;
 }
 
 .amp-input-with-unit {
@@ -203,16 +202,6 @@ input:focus-visible {
 
 .amp-input-with-unit span {
     color: var(--amp-muted);
-}
-
-.amp-limit-input {
-    width: 130px;
-}
-
-.amp-limit-error {
-    flex-basis: 100%;
-    margin: 0;
-    text-align: right;
 }
 
 .amp-button {
@@ -256,10 +245,24 @@ input:focus-visible {
 
 .amp-summary h2 {
     margin: 0;
-    font-size: clamp(2.5rem, 8vw, 4.5rem);
+    font-size: inherit;
     line-height: 1;
     letter-spacing: -0.06em;
     overflow-wrap: anywhere;
+}
+
+.amp-summary-total {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    font-size: clamp(2.5rem, 8vw, 4.5rem);
+}
+
+.amp-summary-percentage {
+    color: var(--amp-muted);
+    font-size: 0.5em;
+    font-weight: 600;
+    white-space: nowrap;
 }
 
 .amp-summary-within {
@@ -439,6 +442,12 @@ input:focus-visible {
     margin-left: auto;
     color: var(--amp-text);
     white-space: nowrap;
+}
+
+.amp-legend-share {
+    margin-left: 0.35rem;
+    color: var(--amp-muted);
+    font-weight: 500;
 }
 
 .amp-legend-swatch {
@@ -662,28 +671,15 @@ input:focus-visible {
         padding: 1.5rem 0.8rem 3rem;
     }
 
-    .amp-safety-note {
-        display: block;
-    }
-
-    .amp-safety-note strong {
-        display: block;
-        margin-bottom: 0.2rem;
-    }
-
     .amp-limit-card,
     .amp-summary {
         align-items: flex-start;
         flex-direction: column;
     }
 
-    .amp-limit-form {
+    .amp-limit-controls {
         width: 100%;
         justify-content: flex-start;
-    }
-
-    .amp-limit-error {
-        text-align: left;
     }
 
     .amp-status {
@@ -695,7 +691,7 @@ input:focus-visible {
         min-width: 0;
     }
 
-    .amp-summary h2 {
+    .amp-summary-total {
         font-size: clamp(1.25rem, 8vw, 2.5rem);
     }
 

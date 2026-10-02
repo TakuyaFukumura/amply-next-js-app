@@ -9,7 +9,6 @@ import {
     MAX_APPLIANCE_AMPS_TENTHS,
     MAX_APPLIANCES,
     parseAmpsTenths,
-    validateLimitTenths,
 } from '../../../lib/ampere/validation';
 import type {AmpereSummary, Appliance, ApplianceInput} from '../../../lib/ampere/types';
 
@@ -19,6 +18,7 @@ type DashboardState =
     | { status: 'ready'; appliances: Appliance[] };
 
 const COLORS = ['#147d71', '#3975c6', '#bc6b28', '#8256a6', '#c04c64', '#558c39', '#277f9f', '#9c7126', '#5465a8', '#a64f82', '#617c7c'];
+const LIMIT_OPTIONS_TENTHS = [100, 200, 300, 400, 500, 600];
 
 async function requestCatalog(signal: AbortSignal): Promise<Appliance[]> {
     const response = await fetch('/data/appliances.csv', {signal});
@@ -40,6 +40,10 @@ function formatChartAxisAmps(tenths: number): string {
     return formatAmps(tenths);
 }
 
+function formatLimitPercentage(ampsTenths: number, limitTenths: number): string {
+    return ((ampsTenths / limitTenths) * 100).toFixed(1);
+}
+
 function AmpereChart({appliances, limitTenths, totalTenths, status}: {
     appliances: Appliance[];
     limitTenths: number;
@@ -58,13 +62,11 @@ function AmpereChart({appliances, limitTenths, totalTenths, status}: {
         : status === 'reached' ? '上限到達' : '上限超過';
 
     return (
-        <section className="amp-card amp-chart-card" aria-labelledby="chart-heading">
+        <section className="amp-card amp-chart-card" aria-label="使用状況">
             <div className="amp-section-heading">
                 <div>
                     <p className="amp-eyebrow">使用状況</p>
-                    <h2 id="chart-heading">家電ごとの内訳</h2>
                 </div>
-                <span className="amp-chart-total">合計 {formatAmps(totalTenths)}</span>
             </div>
             <div
                 className="amp-chart"
@@ -101,7 +103,12 @@ function AmpereChart({appliances, limitTenths, totalTenths, status}: {
                             <span className="amp-legend-swatch" style={{backgroundColor: COLORS[index % COLORS.length]}}
                                   aria-hidden="true"/>
                             <span>{group.name}{group.applianceCount > 1 ? ` (${group.applianceCount}台)` : ''}</span>
-                            <strong>{formatAmps(group.ampsTenths)}</strong>
+                            <strong>
+                                {formatAmps(group.ampsTenths)}
+                                <span className="amp-legend-share">
+                                    ({formatLimitPercentage(group.ampsTenths, limitTenths)}%)
+                                </span>
+                            </strong>
                         </li>
                     ))}
                 </ul>
@@ -307,9 +314,7 @@ function ApplianceList({appliances, onToggle, onEdit, onDelete}: {
 
 export default function AmpereDashboard() {
     const [dashboard, setDashboard] = useState<DashboardState>({status: 'loading'});
-    const [limitInput, setLimitInput] = useState('20.0');
     const [limitTenths, setLimitTenths] = useState(200);
-    const [limitError, setLimitError] = useState<string | null>(null);
     const [editingId, setEditingId] = useState<string | null>(null);
     const requestController = useRef<AbortController | null>(null);
 
@@ -335,9 +340,7 @@ export default function AmpereDashboard() {
         const controller = new AbortController();
         requestController.current = controller;
         setDashboard({status: 'loading'});
-        setLimitInput('20.0');
         setLimitTenths(200);
-        setLimitError(null);
         setEditingId(null);
         void requestCatalog(controller.signal)
             .then((appliances) => {
@@ -356,14 +359,6 @@ export default function AmpereDashboard() {
         () => dashboard.status === 'ready' ? calculateSummary(dashboard.appliances, limitTenths) : null,
         [dashboard, limitTenths]
     );
-
-    const applyLimit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const value = parseAmpsTenths(limitInput);
-        const error = validateLimitTenths(value);
-        setLimitError(error);
-        if (error === null && value !== null) setLimitTenths(value);
-    };
 
     const updateAppliance = (id: string, update: (appliance: Appliance) => Appliance) => {
         setDashboard((current) => current.status === 'ready'
@@ -402,13 +397,7 @@ export default function AmpereDashboard() {
         <main className="amp-page">
             <div className="amp-container">
                 <header className="amp-page-header">
-                    <p className="amp-eyebrow">家庭の電力使用量を見える化</p>
-                    <h1>アンペア使用状況</h1>
-                    <p className="amp-description">使っている家電のアンペア数を合計し、設定した上限と比べられます。</p>
-                    <p className="amp-safety-note">
-                        <strong>ご利用上の注意</strong>
-                        100V家電を対象にした家全体の目安です。200V家電や個別回路は扱わず、実際のブレーカー遮断を保証するものではありません。
-                    </p>
+                    <h1>消費アンペア計算</h1>
                 </header>
 
                 {dashboard.status === 'loading' && (
@@ -437,40 +426,38 @@ export default function AmpereDashboard() {
                     <>
                         <section className="amp-card amp-limit-card" aria-labelledby="limit-heading">
                             <div className="amp-limit-copy">
-                                <p className="amp-eyebrow">比較する基準</p>
                                 <h2 id="limit-heading">上限アンペア数</h2>
-                                <p className="amp-muted">この画面をリロードすると、上限は20.0Aに、家電はCSVの初期状態に戻ります。</p>
                             </div>
-                            <form className="amp-limit-form" onSubmit={applyLimit} noValidate>
+                            <div className="amp-limit-controls">
                                 <label className="amp-sr-only" htmlFor="limit-amps">上限アンペア数</label>
-                                <div className="amp-input-with-unit amp-limit-input">
-                                    <input
-                                        id="limit-amps"
-                                        inputMode="decimal"
-                                        value={limitInput}
-                                        onChange={(event) => setLimitInput(event.target.value)}
-                                        aria-invalid={Boolean(limitError)}
-                                        aria-describedby={limitError ? 'limit-error' : undefined}
-                                    />
-                                    <span>A</span>
-                                </div>
-                                <button className="amp-button amp-button-primary" type="submit">適用</button>
-                                {limitError &&
-                                    <p className="amp-error amp-limit-error" id="limit-error">{limitError}</p>}
-                            </form>
+                                <select
+                                    className="amp-limit-select"
+                                    id="limit-amps"
+                                    value={limitTenths}
+                                    onChange={(event) => setLimitTenths(Number(event.target.value))}
+                                >
+                                    {LIMIT_OPTIONS_TENTHS.map((tenths) => (
+                                        <option key={tenths} value={tenths}>{tenths / 10}A</option>
+                                    ))}
+                                </select>
+                            </div>
                         </section>
 
                         <section className={`amp-summary amp-summary-${summary.status}`} aria-live="polite"
                                  aria-labelledby="summary-heading">
                             <div>
                                 <p className="amp-eyebrow">現在の合計</p>
-                                <h2 id="summary-heading">{formatAmps(summary.totalTenths)}</h2>
+                                <div className="amp-summary-total">
+                                    <h2 id="summary-heading">{formatAmps(summary.totalTenths)}</h2>
+                                    <span className="amp-summary-percentage">
+                                        （{formatLimitPercentage(summary.totalTenths, limitTenths)}%）
+                                    </span>
+                                </div>
                             </div>
                             <div className="amp-status">
                                 <strong>
                                     {summary.status === 'within' ? '✓ 上限内' : summary.status === 'reached' ? '＝ 上限到達' : '！ 上限超過'}
                                 </strong>
-                                <span>上限 {formatAmps(limitTenths)}</span>
                                 {summary.status !== 'exceeded' &&
                                     <span>残り {formatAmps(summary.remainingTenths)}</span>}
                                 {summary.status === 'exceeded' &&
@@ -484,6 +471,8 @@ export default function AmpereDashboard() {
                                 <span>{formatAmps(-summary.remainingTenths)}超過しています。家電の使用状態を確認してください。</span>
                             </aside>
                         )}
+
+                        <p className="amp-muted amp-safety-note">※100V家電用の目安数値です（遮断保証なし）</p>
 
                         <AmpereChart
                             appliances={dashboard.appliances}

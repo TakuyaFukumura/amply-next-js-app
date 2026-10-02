@@ -21,15 +21,47 @@ describe('Home', () => {
         render(<Home/>, {reactStrictMode: false});
 
         expect(await screen.findByRole('heading', {name: '家電一覧'})).toBeInTheDocument();
+        expect(screen.queryByRole('button', {name: '適用'})).not.toBeInTheDocument();
         expect(screen.getByRole('heading', {name: '0.0A'})).toBeInTheDocument();
+        expect(screen.queryByText('合計 0.0A', {exact: true})).not.toBeInTheDocument();
+        expect(screen.queryByText('家電ごとの内訳')).not.toBeInTheDocument();
+        expect(screen.getByRole('region', {name: '使用状況'})).toBeInTheDocument();
+        expect(screen.queryByText('上限 20.0A', {exact: true})).not.toBeInTheDocument();
+        expect(screen.getByText('（0.0%）')).toBeInTheDocument();
+        expect(screen.queryByText('比較する基準')).not.toBeInTheDocument();
+        expect(screen.queryByText('この画面をリロードすると、上限は20.0Aに、家電はCSVの初期状態に戻ります。')).not.toBeInTheDocument();
+        const totalHeading = screen.getByRole('heading', {name: '0.0A'});
+        const safetyNote = screen.getByText('※100V家電用の目安数値です（遮断保証なし）');
+        expect(totalHeading.compareDocumentPosition(safetyNote) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
         fireEvent.click(screen.getByRole('switch', {name: '冷蔵庫を集計に含める'}));
         expect(screen.getByRole('heading', {name: '2.5A'})).toBeInTheDocument();
+        expect(screen.getByText('（12.5%）')).toBeInTheDocument();
+        expect(screen.getByText('(12.5%)')).toBeInTheDocument();
 
-        fireEvent.change(screen.getByRole('textbox', {name: '上限アンペア数'}), {target: {value: '2.5'}});
-        fireEvent.click(screen.getByRole('button', {name: '適用'}));
-        expect(screen.getByText('＝ 上限到達')).toBeInTheDocument();
-        expect(screen.getByText('残り 0.0A')).toBeInTheDocument();
-        expect(screen.getByRole('img')).toHaveAccessibleName(/上限到達/);
+        const limitSelect = screen.getByRole('combobox', {name: '上限アンペア数'});
+        fireEvent.change(limitSelect, {target: {value: '100'}});
+        expect(screen.getByText('✓ 上限内')).toBeInTheDocument();
+        expect(screen.getByText('残り 7.5A')).toBeInTheDocument();
+        expect(screen.getByText('（25.0%）')).toBeInTheDocument();
+        expect(screen.getByText('(25.0%)')).toBeInTheDocument();
+        expect(screen.getByRole('img')).toHaveAccessibleName(/上限内/);
+    });
+
+    it('offers upper limits from 10A to 60A in 10A increments', async () => {
+        jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(catalog));
+        render(<Home/>, {reactStrictMode: false});
+        await screen.findByRole('heading', {name: '家電一覧'});
+
+        const limitSelect = screen.getByRole('combobox', {name: '上限アンペア数'});
+        expect(limitSelect).toHaveValue('200');
+        expect(within(limitSelect).getAllByRole('option').map((option) => option.textContent)).toEqual([
+            '10A',
+            '20A',
+            '30A',
+            '40A',
+            '50A',
+            '60A',
+        ]);
     });
 
     it('includes the refrigerator, air conditioner and PC appliances in usage by default', async () => {
@@ -102,23 +134,10 @@ describe('Home', () => {
         expect(screen.getByRole('heading', {name: '2.8A'})).toBeInTheDocument();
     });
 
-    it('keeps the committed limit when a non-tenth value is rejected', async () => {
-        jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(catalog));
-        render(<Home/>, {reactStrictMode: false});
-        await screen.findByRole('heading', {name: '家電一覧'});
-        fireEvent.change(screen.getByRole('textbox', {name: '上限アンペア数'}), {target: {value: '2.05'}});
-        fireEvent.click(screen.getByRole('button', {name: '適用'}));
-
-        expect(screen.getByText('0.1A刻みの数値を入力してください。')).toBeInTheDocument();
-        expect(screen.getByText('上限 20.0A')).toBeInTheDocument();
-    });
-
     it('explains that the appliance value is capped to preserve exact totals', async () => {
         jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(catalog));
         render(<Home/>, {reactStrictMode: false});
         await screen.findByRole('heading', {name: '家電一覧'});
-
-        expect(screen.getByText(/上限は20\.0Aに、家電はCSVの初期状態に戻ります/)).toBeInTheDocument();
 
         fireEvent.change(screen.getByLabelText(/家電名/), {target: {value: '極端な値の家電'}});
         fireEvent.change(screen.getByLabelText(/運転中アンペア数/), {target: {value: '180143985094819.2'}});

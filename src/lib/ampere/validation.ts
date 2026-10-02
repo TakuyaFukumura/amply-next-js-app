@@ -23,19 +23,6 @@ export function isValidApplianceAmpsTenths(value: number | null): value is numbe
         && value <= MAX_APPLIANCE_AMPS_TENTHS;
 }
 
-export function validateLimitTenths(value: number | null): string | null {
-    if (value === null) {
-        return '0.1A刻みの数値を入力してください。';
-    }
-    if (value < 1) {
-        return '上限は0.1A以上にしてください。';
-    }
-    if (value > 600) {
-        return '上限は60.0A以下にしてください。';
-    }
-    return null;
-}
-
 export function formatAmps(tenths: number): string {
     const absoluteTenths = Math.abs(tenths);
     const tenthsDigit = absoluteTenths % 10;

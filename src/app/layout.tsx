@@ -5,7 +5,7 @@ import Header from "./components/Header";
 import React from "react";
 
 export const metadata: Metadata = {
-    title: "アンペア使用状況 | Amply",
+    title: "消費アンペア計算 | Amply",
     description: "家庭で使う家電のアンペア数を集計し、設定した上限と比較する目安アプリです。",
 };
 
