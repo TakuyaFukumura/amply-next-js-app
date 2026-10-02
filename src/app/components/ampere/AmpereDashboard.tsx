@@ -180,6 +180,7 @@ function ApplianceEditor({appliances, editing, onCancel, onSave}: {
                 <label className="amp-field">
                     <span>家電名 <span className="amp-required">必須</span></span>
                     <input
+                        autoFocus={Boolean(editing)}
                         value={name}
                         onChange={(event) => setName(event.target.value)}
                         aria-invalid={Boolean(errors.name)}
