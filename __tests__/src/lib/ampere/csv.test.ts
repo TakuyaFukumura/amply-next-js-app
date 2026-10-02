@@ -72,8 +72,8 @@ describe('parseCatalog', () => {
             '冷蔵庫', 'エアコン', 'LED照明', '電子レンジ', '洗濯機', '炊飯器', '掃除機', '電気ケトル',
             'ドライヤー', 'アイロン', 'ヘアアイロン', 'ノートPC', 'デスクトップPC', 'ルーター',
         ]);
-        expect(rows.map((row) => row.runningAmpsTenths)).toEqual([25, 60, 5, 140, 50, 130, 100, 130, 120, 140, 15, 7, 15, 2]);
-        expect(rows.map((row) => row.startupAmpsTenths)).toEqual([75, 120, 10, 140, 150, 130, 150, 130, 150, 140, 15, 15, 30, 5]);
+        expect(rows.map((row) => row.runningAmpsTenths)).toEqual([25, 60, 5, 140, 50, 70, 100, 130, 120, 140, 15, 7, 15, 2]);
+        expect(rows.map((row) => row.startupAmpsTenths)).toEqual([75, 120, 10, 140, 150, 70, 150, 130, 150, 140, 15, 15, 30, 5]);
         expect(rows.find((row) => row.name === '冷蔵庫')?.enabled).toBe(true);
         expect(rows.find((row) => row.name === 'エアコン')?.enabled).toBe(true);
         expect(rows.find((row) => row.name === 'LED照明')?.enabled).toBe(false);
@@ -85,6 +85,7 @@ describe('parseCatalog', () => {
         expect(rows.find((row) => row.name === 'エアコン')?.note).toContain('100V・6畳用');
         expect(rows.find((row) => row.name === 'LED照明')?.note).toContain('50W級の照明負荷');
         expect(rows.find((row) => row.name === '電子レンジ')?.note).toContain('低価格帯の家庭用オーブンレンジ');
+        expect(rows.find((row) => row.name === '炊飯器')?.note).toContain('3合炊きIH炊飯器');
         expect(rows.find((row) => row.name === 'ノートPC')?.note).toContain('0.1A刻みに切り上げた目安');
         expect(rows.find((row) => row.name === 'ルーター')?.note).toContain('0.1A刻みに切り上げた目安');
     });
