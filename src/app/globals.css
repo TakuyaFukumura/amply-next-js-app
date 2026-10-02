@@ -633,6 +633,10 @@ input:focus-visible {
     background: var(--amp-primary);
 }
 
+.dark .amp-switch.is-on > span {
+    background: #0f766e;
+}
+
 .amp-switch.is-on > span::after {
     transform: translateX(13px);
 }
