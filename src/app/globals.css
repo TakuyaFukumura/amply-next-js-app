@@ -244,7 +244,7 @@ input:focus-visible {
 
 .amp-summary h2 {
     margin: 0;
-    font-size: clamp(2.5rem, 8vw, 4.5rem);
+    font-size: inherit;
     line-height: 1;
     letter-spacing: -0.06em;
     overflow-wrap: anywhere;
@@ -254,11 +254,12 @@ input:focus-visible {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
+    font-size: clamp(2.5rem, 8vw, 4.5rem);
 }
 
 .amp-summary-percentage {
     color: var(--amp-muted);
-    font-size: 0.95rem;
+    font-size: 0.5em;
     font-weight: 600;
     white-space: nowrap;
 }
@@ -693,7 +694,7 @@ input:focus-visible {
         min-width: 0;
     }
 
-    .amp-summary h2 {
+    .amp-summary-total {
         font-size: clamp(1.25rem, 8vw, 2.5rem);
     }
 
