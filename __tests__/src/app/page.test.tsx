@@ -20,7 +20,7 @@ describe('Home', () => {
         jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(catalog));
         render(<Home/>, {reactStrictMode: false});
 
-        expect(await screen.findByRole('heading', {name: '家電一覧'})).toBeInTheDocument();
+        expect(await screen.findByRole('heading', {name: '登録家電一覧'})).toBeInTheDocument();
         expect(screen.queryByRole('button', {name: '適用'})).not.toBeInTheDocument();
         expect(screen.getByRole('heading', {name: '0.0A'})).toBeInTheDocument();
         expect(screen.queryByText('合計 0.0A', {exact: true})).not.toBeInTheDocument();
@@ -50,7 +50,7 @@ describe('Home', () => {
     it('offers upper limits from 10A to 60A in 10A increments', async () => {
         jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(catalog));
         render(<Home/>, {reactStrictMode: false});
-        await screen.findByRole('heading', {name: '家電一覧'});
+        await screen.findByRole('heading', {name: '登録家電一覧'});
 
         const limitSelect = screen.getByRole('combobox', {name: '上限アンペア数'});
         expect(limitSelect).toHaveValue('200');
@@ -74,7 +74,7 @@ describe('Home', () => {
         ].join('\n');
         jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(initiallyEnabledCatalog));
         render(<Home/>, {reactStrictMode: false});
-        await screen.findByRole('heading', {name: '家電一覧'});
+        await screen.findByRole('heading', {name: '登録家電一覧'});
 
         expect(screen.getByRole('switch', {name: '冷蔵庫を集計に含める'})).toHaveAttribute('aria-checked', 'true');
         expect(screen.getByRole('switch', {name: 'エアコンを集計に含める'})).toHaveAttribute('aria-checked', 'true');
@@ -90,7 +90,7 @@ describe('Home', () => {
 電子レンジ,15.0,,false,目安`;
         jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(configuredCatalog));
         render(<Home/>, {reactStrictMode: false});
-        await screen.findByRole('heading', {name: '家電一覧'});
+        await screen.findByRole('heading', {name: '登録家電一覧'});
 
         const fridgeRow = screen.getByRole('heading', {name: '冷蔵庫'}).closest('li');
         expect(fridgeRow).not.toBeNull();
@@ -113,14 +113,14 @@ describe('Home', () => {
         expect(screen.queryByRole('heading', {name: '0.0A'})).not.toBeInTheDocument();
         expect(screen.queryByRole('img')).not.toBeInTheDocument();
         fireEvent.click(screen.getByRole('button', {name: '再試行'}));
-        expect(await screen.findByRole('heading', {name: '家電一覧'})).toBeInTheDocument();
+        expect(await screen.findByRole('heading', {name: '登録家電一覧'})).toBeInTheDocument();
         expect(fetchMock.mock.calls.length).toBeGreaterThanOrEqual(2);
     });
 
     it('adds a user appliance as enabled and distinguishes starting state', async () => {
         jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(catalog));
         render(<Home/>, {reactStrictMode: false});
-        await screen.findByRole('heading', {name: '家電一覧'});
+        await screen.findByRole('heading', {name: '登録家電一覧'});
 
         fireEvent.change(screen.getByLabelText(/家電名/), {target: {value: '扇風機'}});
         fireEvent.change(screen.getByLabelText(/運転中アンペア数/), {target: {value: '1.2'}});
@@ -137,7 +137,7 @@ describe('Home', () => {
     it('explains that the appliance value is capped to preserve exact totals', async () => {
         jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(catalog));
         render(<Home/>, {reactStrictMode: false});
-        await screen.findByRole('heading', {name: '家電一覧'});
+        await screen.findByRole('heading', {name: '登録家電一覧'});
 
         fireEvent.change(screen.getByLabelText(/家電名/), {target: {value: '極端な値の家電'}});
         fireEvent.change(screen.getByLabelText(/運転中アンペア数/), {target: {value: '180143985094819.2'}});
@@ -159,7 +159,7 @@ describe('Home', () => {
         ].join('\n');
         jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(maxCatalog));
         render(<Home/>, {reactStrictMode: false});
-        await screen.findByRole('heading', {name: '家電一覧'});
+        await screen.findByRole('heading', {name: '登録家電一覧'});
 
         expect(screen.getByRole('heading', {name: formatAmps(MAX_APPLIANCE_AMPS_TENTHS * MAX_APPLIANCES)})).toBeInTheDocument();
         expect(screen.getAllByText(/兆A$/).length).toBeGreaterThan(0);
@@ -176,7 +176,7 @@ describe('Home', () => {
         ].join('\n');
         jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(fiftyAppliances));
         render(<Home/>, {reactStrictMode: false});
-        await screen.findByRole('heading', {name: '家電一覧'});
+        await screen.findByRole('heading', {name: '登録家電一覧'});
         fireEvent.change(screen.getByLabelText(/家電名/), {target: {value: '追加分'}});
         fireEvent.change(screen.getByLabelText(/運転中アンペア数/), {target: {value: '1.0'}});
         fireEvent.click(screen.getByRole('button', {name: '家電を追加'}));
@@ -191,7 +191,7 @@ describe('Home', () => {
 扇風機,1.0,,false,2台目`;
         jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(duplicateCatalog));
         render(<Home/>, {reactStrictMode: false});
-        await screen.findByRole('heading', {name: '家電一覧'});
+        await screen.findByRole('heading', {name: '登録家電一覧'});
 
         const switches = screen.getAllByRole('switch', {name: '扇風機を集計に含める'});
         fireEvent.click(switches[0]);
@@ -204,7 +204,7 @@ describe('Home', () => {
     it('explains that an inactive appliance is not counted when starting has no startup value', async () => {
         jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(catalog));
         render(<Home/>, {reactStrictMode: false});
-        await screen.findByRole('heading', {name: '家電一覧'});
+        await screen.findByRole('heading', {name: '登録家電一覧'});
         fireEvent.click(screen.getByRole('switch', {name: '冷蔵庫を起動中にする'}));
 
         const row = screen.getByRole('heading', {name: '冷蔵庫'}).closest('li');
@@ -241,7 +241,7 @@ describe('Home', () => {
 電子レンジ,15.0,,false,目安`;
         jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(editCatalog));
         render(<Home/>, {reactStrictMode: false});
-        await screen.findByRole('heading', {name: '家電一覧'});
+        await screen.findByRole('heading', {name: '登録家電一覧'});
         fireEvent.click(screen.getByRole('switch', {name: '冷蔵庫を集計に含める'}));
         fireEvent.click(screen.getByRole('switch', {name: '冷蔵庫を起動中にする'}));
         fireEvent.click(screen.getAllByRole('button', {name: '編集'})[0]);

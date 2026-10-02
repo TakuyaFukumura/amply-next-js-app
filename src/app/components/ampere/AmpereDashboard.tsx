@@ -245,8 +245,7 @@ function ApplianceList({appliances, onToggle, onEdit}: {
         <section className="amp-card" aria-labelledby="appliances-heading">
             <div className="amp-section-heading">
                 <div>
-                    <p className="amp-eyebrow">登録内容</p>
-                    <h2 id="appliances-heading">家電一覧</h2>
+                    <h2 id="appliances-heading">登録家電一覧</h2>
                 </div>
                 <span className="amp-count">{appliances.length} 台</span>
             </div>
