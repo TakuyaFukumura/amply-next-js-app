@@ -37,5 +37,8 @@ export function validateLimitTenths(value: number | null): string | null {
 }
 
 export function formatAmps(tenths: number): string {
-    return `${(tenths / 10).toFixed(1)}A`;
+    const absoluteTenths = Math.abs(tenths);
+    const tenthsDigit = absoluteTenths % 10;
+    const wholeAmps = (absoluteTenths - tenthsDigit) / 10;
+    return `${tenths < 0 ? '-' : ''}${wholeAmps}.${tenthsDigit}A`;
 }

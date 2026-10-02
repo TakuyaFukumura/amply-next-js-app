@@ -412,7 +412,7 @@ export default function AmpereDashboard() {
                     <section className="amp-card amp-error-card" role="alert">
                         <h2>家電カタログを読み込めませんでした</h2>
                         <p>{dashboard.message}</p>
-                        <p>CSVの形式・値を確認してから、もう一度お試しください。</p>
+                        <p>通信状況とCSVの形式・値を確認してから、もう一度お試しください。</p>
                         <button
                             className="amp-button amp-button-primary"
                             type="button"

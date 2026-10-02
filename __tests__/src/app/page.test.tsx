@@ -183,7 +183,9 @@ describe('Home', () => {
             });
         const {unmount} = render(<Home />, {reactStrictMode: false});
 
-        expect(await screen.findByRole('alert')).toHaveTextContent('network failure');
+        const error = await screen.findByRole('alert');
+        expect(error).toHaveTextContent('network failure');
+        expect(error).toHaveTextContent('通信状況とCSVの形式・値を確認');
         fireEvent.click(screen.getByRole('button', {name: '再試行'}));
         expect(await screen.findByText('家電カタログを読み込み中...')).toBeInTheDocument();
         unmount();

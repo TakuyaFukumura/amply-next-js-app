@@ -29,6 +29,11 @@ describe('ampere validation', () => {
         expect(formatAmps(123)).toBe('12.3A');
     });
 
+    it('formats large safe integers without floating-point drift', () => {
+        expect(formatAmps(9007199254740942)).toBe('900719925474094.2A');
+        expect(formatAmps(-9007199254740942)).toBe('-900719925474094.2A');
+    });
+
     it('caps each appliance so the maximum appliance count can be summed exactly', () => {
         expect(MAX_APPLIANCES * MAX_APPLIANCE_AMPS_TENTHS).toBeLessThanOrEqual(Number.MAX_SAFE_INTEGER);
         expect(isValidApplianceAmpsTenths(MAX_APPLIANCE_AMPS_TENTHS)).toBe(true);
