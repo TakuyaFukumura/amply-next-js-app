@@ -1,7 +1,12 @@
 'use client';
 
 import {useEffect, useMemo, useRef, useState} from 'react';
-import {calculateSummary, getApplianceAmpsTenths, getChartGroups} from '../../../lib/ampere/calculations';
+import {
+    calculateSummary,
+    getApplianceAmpsTenths,
+    getApplianceOperatingAmpsTenths,
+    getChartGroups,
+} from '../../../lib/ampere/calculations';
 import {CatalogError, parseCatalog} from '../../../lib/ampere/csv';
 import {
     formatAmps,
@@ -241,9 +246,24 @@ function ApplianceList({appliances, onToggle, onEdit}: {
     onToggle: (id: string, field: 'enabled' | 'starting') => void;
     onEdit: (appliance: Appliance) => void;
 }) {
-    const [enabledOnly, setEnabledOnly] = useState(false);
+    const [applianceFilter, setApplianceFilter] = useState<'all' | 'enabled' | 'disabled'>('all');
     const [hideNotes, setHideNotes] = useState(false);
-    const visibleAppliances = enabledOnly ? appliances.filter((appliance) => appliance.enabled) : appliances;
+    const [initialOrderIds] = useState(() => [...appliances]
+        .sort((first, second) =>
+            Number(second.enabled) - Number(first.enabled)
+            || getApplianceOperatingAmpsTenths(second) - getApplianceOperatingAmpsTenths(first)
+        )
+        .map((appliance) => appliance.id));
+    const appliancesById = new Map(appliances.map((appliance) => [appliance.id, appliance]));
+    const initialOrderIdSet = new Set(initialOrderIds);
+    const orderedAppliances = [
+        ...initialOrderIds
+            .map((id) => appliancesById.get(id))
+            .filter((appliance): appliance is Appliance => appliance !== undefined),
+        ...appliances.filter((appliance) => !initialOrderIdSet.has(appliance.id)),
+    ];
+    const visibleAppliances = orderedAppliances.filter((appliance) => applianceFilter === 'all'
+        || appliance.enabled === (applianceFilter === 'enabled'));
 
     return (
         <section className="amp-card" aria-labelledby="appliances-heading">
@@ -258,10 +278,18 @@ function ApplianceList({appliances, onToggle, onEdit}: {
                     <label className="amp-appliance-filter">
                         <input
                             type="checkbox"
-                            checked={enabledOnly}
-                            onChange={(event) => setEnabledOnly(event.target.checked)}
+                            checked={applianceFilter === 'enabled'}
+                            onChange={(event) => setApplianceFilter(event.target.checked ? 'enabled' : 'all')}
                         />
                         使用中のみ表示
+                    </label>
+                    <label className="amp-appliance-filter">
+                        <input
+                            type="checkbox"
+                            checked={applianceFilter === 'disabled'}
+                            onChange={(event) => setApplianceFilter(event.target.checked ? 'disabled' : 'all')}
+                        />
+                        未使用のみ表示
                     </label>
                     <label className="amp-appliance-filter">
                         <input
@@ -276,7 +304,9 @@ function ApplianceList({appliances, onToggle, onEdit}: {
             {appliances.length === 0 ? (
                 <p className="amp-empty">家電がありません。下の「追加」フォームから登録できます。</p>
             ) : visibleAppliances.length === 0 ? (
-                <p className="amp-empty" role="status">使用中の家電はありません。</p>
+                <p className="amp-empty" role="status">
+                    {applianceFilter === 'enabled' ? '使用中の家電はありません。' : '未使用の家電はありません。'}
+                </p>
             ) : (
                 <ul className="amp-appliance-list">
                     {visibleAppliances.map((appliance) => {
