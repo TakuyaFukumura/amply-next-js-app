@@ -23,7 +23,7 @@ describe('Home', () => {
         expect(await screen.findByRole('heading', {name: '家電一覧'})).toBeInTheDocument();
         expect(screen.getByRole('heading', {name: '0.0A'})).toBeInTheDocument();
         const totalHeading = screen.getByRole('heading', {name: '0.0A'});
-        const safetyNote = screen.getByText(/100V家電を対象/);
+        const safetyNote = screen.getByText('100V家電を対象にした家全体の目安です。実際のブレーカー遮断を保証するものではありません。');
         expect(totalHeading.compareDocumentPosition(safetyNote) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
         fireEvent.click(screen.getByRole('switch', {name: '冷蔵庫を集計に含める'}));
         expect(screen.getByRole('heading', {name: '2.5A'})).toBeInTheDocument();

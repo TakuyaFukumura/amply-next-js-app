@@ -481,7 +481,7 @@ export default function AmpereDashboard() {
 
                         <p className="amp-safety-note">
                             <strong>ご利用上の注意</strong>
-                            100V家電を対象にした家全体の目安です。200V家電や個別回路は扱わず、実際のブレーカー遮断を保証するものではありません。
+                            100V家電を対象にした家全体の目安です。実際のブレーカー遮断を保証するものではありません。
                         </p>
 
                         <AmpereChart
