@@ -21,6 +21,7 @@ describe('Home', () => {
         render(<Home/>, {reactStrictMode: false});
 
         expect(await screen.findByRole('heading', {name: '家電一覧'})).toBeInTheDocument();
+        expect(screen.queryByRole('button', {name: '適用'})).not.toBeInTheDocument();
         expect(screen.getByRole('heading', {name: '0.0A'})).toBeInTheDocument();
         expect(screen.queryByText('合計 0.0A', {exact: true})).not.toBeInTheDocument();
         expect(screen.queryByText('家電ごとの内訳')).not.toBeInTheDocument();
@@ -42,7 +43,6 @@ describe('Home', () => {
         expect(limitInput).toHaveAttribute('min', '0.1');
         expect(limitInput).toHaveAttribute('max', '60');
         fireEvent.change(limitInput, {target: {value: '2.5'}});
-        fireEvent.click(screen.getByRole('button', {name: '適用'}));
         expect(screen.getByText('＝ 上限到達')).toBeInTheDocument();
         expect(screen.getByText('残り 0.0A')).toBeInTheDocument();
         expect(screen.getByText('（100.0%）')).toBeInTheDocument();
@@ -125,7 +125,6 @@ describe('Home', () => {
         render(<Home/>, {reactStrictMode: false});
         await screen.findByRole('heading', {name: '家電一覧'});
         fireEvent.change(screen.getByRole('spinbutton', {name: '上限アンペア数'}), {target: {value: '2.05'}});
-        fireEvent.click(screen.getByRole('button', {name: '適用'}));
 
         expect(screen.getByText('0.1A刻みの数値を入力してください。')).toBeInTheDocument();
         expect(screen.getByText('残り 20.0A')).toBeInTheDocument();

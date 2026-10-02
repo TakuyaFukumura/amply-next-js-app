@@ -364,12 +364,12 @@ export default function AmpereDashboard() {
         [dashboard, limitTenths]
     );
 
-    const applyLimit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const value = parseAmpsTenths(limitInput);
-        const error = validateLimitTenths(value);
+    const updateLimit = (value: string) => {
+        setLimitInput(value);
+        const parsed = parseAmpsTenths(value);
+        const error = validateLimitTenths(parsed);
         setLimitError(error);
-        if (error === null && value !== null) setLimitTenths(value);
+        if (error === null && parsed !== null) setLimitTenths(parsed);
     };
 
     const updateAppliance = (id: string, update: (appliance: Appliance) => Appliance) => {
@@ -440,7 +440,7 @@ export default function AmpereDashboard() {
                             <div className="amp-limit-copy">
                                 <h2 id="limit-heading">上限アンペア数</h2>
                             </div>
-                            <form className="amp-limit-form" onSubmit={applyLimit} noValidate>
+                            <div className="amp-limit-form">
                                 <label className="amp-sr-only" htmlFor="limit-amps">上限アンペア数</label>
                                 <div className="amp-input-with-unit amp-limit-input">
                                     <input
@@ -451,16 +451,15 @@ export default function AmpereDashboard() {
                                         step="0.1"
                                         inputMode="decimal"
                                         value={limitInput}
-                                        onChange={(event) => setLimitInput(event.target.value)}
+                                        onChange={(event) => updateLimit(event.target.value)}
                                         aria-invalid={Boolean(limitError)}
                                         aria-describedby={limitError ? 'limit-error' : undefined}
                                     />
                                     <span>A</span>
                                 </div>
-                                <button className="amp-button amp-button-primary" type="submit">適用</button>
                                 {limitError &&
                                     <p className="amp-error amp-limit-error" id="limit-error">{limitError}</p>}
-                            </form>
+                            </div>
                         </section>
 
                         <section className={`amp-summary amp-summary-${summary.status}`} aria-live="polite"
