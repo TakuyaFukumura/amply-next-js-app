@@ -402,9 +402,7 @@ export default function AmpereDashboard() {
         <main className="amp-page">
             <div className="amp-container">
                 <header className="amp-page-header">
-                    <p className="amp-eyebrow">家庭の電力使用量を見える化</p>
-                    <h1>アンペア使用状況</h1>
-                    <p className="amp-description">使っている家電のアンペア数を合計し、設定した上限と比べられます。</p>
+                    <h1>消費アンペア計算</h1>
                     <p className="amp-safety-note">
                         <strong>ご利用上の注意</strong>
                         100V家電を対象にした家全体の目安です。200V家電や個別回路は扱わず、実際のブレーカー遮断を保証するものではありません。
