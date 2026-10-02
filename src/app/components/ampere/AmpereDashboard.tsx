@@ -63,7 +63,6 @@ function AmpereChart({appliances, limitTenths, totalTenths, status}: {
                 <div>
                     <p className="amp-eyebrow">使用状況</p>
                 </div>
-                <span className="amp-chart-total">合計 {formatAmps(totalTenths)}</span>
             </div>
             <div
                 className="amp-chart"

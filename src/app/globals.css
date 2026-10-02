@@ -137,8 +137,7 @@ input:focus-visible {
     margin-bottom: 0.15rem;
 }
 
-.amp-count,
-.amp-chart-total {
+.amp-count {
     color: var(--amp-muted);
     font-size: 0.9rem;
     font-weight: 650;

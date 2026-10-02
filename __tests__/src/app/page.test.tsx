@@ -22,6 +22,7 @@ describe('Home', () => {
 
         expect(await screen.findByRole('heading', {name: '家電一覧'})).toBeInTheDocument();
         expect(screen.getByRole('heading', {name: '0.0A'})).toBeInTheDocument();
+        expect(screen.queryByText('合計 0.0A', {exact: true})).not.toBeInTheDocument();
         expect(screen.queryByText('家電ごとの内訳')).not.toBeInTheDocument();
         expect(screen.getByRole('region', {name: '使用状況'})).toBeInTheDocument();
         expect(screen.queryByText('上限 20.0A', {exact: true})).not.toBeInTheDocument();
