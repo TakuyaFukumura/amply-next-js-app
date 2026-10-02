@@ -1,5 +1,6 @@
 import {fireEvent, render, screen, within} from '@testing-library/react';
 import Home from '../../../src/app/page';
+import {formatAmps, MAX_APPLIANCE_AMPS_TENTHS, MAX_APPLIANCES} from '../../../src/lib/ampere/validation';
 
 const catalog = `name,runningAmps,startupAmps,initiallyEnabled,note
 冷蔵庫,2.5,,false,450L級の目安
@@ -103,6 +104,28 @@ describe('Home', () => {
 
         expect(screen.getByText(/1台あたり.*以下で入力してください/)).toBeInTheDocument();
         expect(screen.queryByRole('heading', {name: '極端な値の家電'})).not.toBeInTheDocument();
+    });
+
+    it('renders maximum totals and long appliance text without unbroken chart-axis labels', async () => {
+        const longName = '名前'.repeat(40);
+        const longNote = '備考'.repeat(60);
+        const maxAmps = formatAmps(MAX_APPLIANCE_AMPS_TENTHS).replace(/A$/, '');
+        const maxCatalog = [
+            'name,runningAmps,startupAmps,initiallyEnabled,note',
+            ...Array.from({length: MAX_APPLIANCES}, (_, index) =>
+                `${index === 0 ? longName : `家電${index}`},${maxAmps},,true,${index === 0 ? longNote : '参考値'}`
+            ),
+        ].join('\n');
+        jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(maxCatalog));
+        render(<Home />, {reactStrictMode: false});
+        await screen.findByRole('heading', {name: '家電一覧'});
+
+        expect(screen.getByRole('heading', {name: formatAmps(MAX_APPLIANCE_AMPS_TENTHS * MAX_APPLIANCES)})).toBeInTheDocument();
+        expect(screen.getAllByText(/兆A$/).length).toBeGreaterThan(0);
+        const longNameHeading = screen.getByRole('heading', {name: longName});
+        const applianceRow = longNameHeading.closest('li');
+        expect(applianceRow).not.toBeNull();
+        expect(within(applianceRow as HTMLElement).getByText(longNote)).toBeInTheDocument();
     });
 
     it('rejects adding an appliance when the catalog already contains fifty', async () => {

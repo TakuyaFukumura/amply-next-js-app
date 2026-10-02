@@ -32,6 +32,14 @@ function makeId(): string {
     return `user-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
+function formatChartAxisAmps(tenths: number): string {
+    const amps = tenths / 10;
+    if (amps >= 1_000_000_000_000) return `${(amps / 1_000_000_000_000).toFixed(1)}兆A`;
+    if (amps >= 100_000_000) return `${(amps / 100_000_000).toFixed(1)}億A`;
+    if (amps >= 10_000) return `${(amps / 10_000).toFixed(1)}万A`;
+    return formatAmps(tenths);
+}
+
 function AmpereChart({appliances, limitTenths, totalTenths, status}: {
     appliances: Appliance[];
     limitTenths: number;
@@ -80,7 +88,7 @@ function AmpereChart({appliances, limitTenths, totalTenths, status}: {
                 <div className="amp-axis" aria-hidden="true">
                     {uniqueTicks.map((tick) => (
                         <span key={tick} style={{left: `${(tick / scaleTenths) * 100}%`}}>
-                            {formatAmps(tick)}
+                            {formatChartAxisAmps(tick)}
                         </span>
                     ))}
                 </div>

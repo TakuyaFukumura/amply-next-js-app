@@ -261,6 +261,7 @@ input:focus-visible {
     font-size: clamp(2.5rem, 8vw, 4.5rem);
     line-height: 1;
     letter-spacing: -0.06em;
+    overflow-wrap: anywhere;
 }
 
 .amp-summary-within {
@@ -511,9 +512,14 @@ input:focus-visible {
     gap: 1rem;
 }
 
+.amp-appliance-main > div {
+    min-width: 0;
+}
+
 .amp-appliance-main h3 {
     margin: 0;
     font-size: 1rem;
+    overflow-wrap: anywhere;
 }
 
 .amp-appliance-main p {
@@ -521,6 +527,7 @@ input:focus-visible {
     color: var(--amp-muted);
     font-size: 0.82rem;
     line-height: 1.5;
+    overflow-wrap: anywhere;
 }
 
 .amp-appliance-value {
@@ -675,6 +682,15 @@ input:focus-visible {
 
     .amp-status {
         text-align: left;
+    }
+
+    .amp-summary > div:first-child {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .amp-summary h2 {
+        font-size: clamp(1.25rem, 8vw, 2.5rem);
     }
 
     .amp-legend {
