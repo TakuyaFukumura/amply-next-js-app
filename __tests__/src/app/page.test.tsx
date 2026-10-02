@@ -5,7 +5,7 @@ import {formatAmps, MAX_APPLIANCE_AMPS_TENTHS, MAX_APPLIANCES} from '../../../sr
 const catalog = `name,runningAmps,startupAmps,initiallyEnabled,note
 冷蔵庫,2.5,,false,200L級の目安
 エアコン,6.0,,false,100V・6畳用の目安
-電子レンジ,15.0,,false,加熱時の目安`;
+電子レンジ,14.0,,false,低価格帯オーブンレンジの目安`;
 
 const createResponse = (body: string, status = 200): Response => ({
     ok: status >= 200 && status < 300,
