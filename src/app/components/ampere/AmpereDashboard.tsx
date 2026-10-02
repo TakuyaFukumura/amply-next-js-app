@@ -403,10 +403,6 @@ export default function AmpereDashboard() {
             <div className="amp-container">
                 <header className="amp-page-header">
                     <h1>消費アンペア計算</h1>
-                    <p className="amp-safety-note">
-                        <strong>ご利用上の注意</strong>
-                        100V家電を対象にした家全体の目安です。200V家電や個別回路は扱わず、実際のブレーカー遮断を保証するものではありません。
-                    </p>
                 </header>
 
                 {dashboard.status === 'loading' && (
@@ -482,6 +478,11 @@ export default function AmpereDashboard() {
                                 <span>{formatAmps(-summary.remainingTenths)}超過しています。家電の使用状態を確認してください。</span>
                             </aside>
                         )}
+
+                        <p className="amp-safety-note">
+                            <strong>ご利用上の注意</strong>
+                            100V家電を対象にした家全体の目安です。200V家電や個別回路は扱わず、実際のブレーカー遮断を保証するものではありません。
+                        </p>
 
                         <AmpereChart
                             appliances={dashboard.appliances}

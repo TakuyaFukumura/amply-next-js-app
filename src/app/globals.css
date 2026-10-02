@@ -101,6 +101,7 @@ input:focus-visible {
 .amp-safety-note {
     display: flex;
     gap: 0.65rem;
+    margin-top: 1rem;
     padding: 0.8rem 1rem;
     border: 1px solid var(--amp-border);
     border-radius: 0.85rem;
