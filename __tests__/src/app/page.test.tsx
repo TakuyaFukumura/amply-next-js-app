@@ -17,7 +17,7 @@ describe('Home', () => {
 
     it('loads the initial catalog, applies appliance toggles and the upper limit', async () => {
         jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(catalog));
-        render(<Home />, {reactStrictMode: false});
+        render(<Home/>, {reactStrictMode: false});
 
         expect(await screen.findByRole('heading', {name: '家電一覧'})).toBeInTheDocument();
         expect(screen.getByRole('heading', {name: '0.0A'})).toBeInTheDocument();
@@ -36,7 +36,7 @@ describe('Home', () => {
 冷蔵庫,2.5,4.0,false,目安
 電子レンジ,15.0,,false,目安`;
         jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(configuredCatalog));
-        render(<Home />, {reactStrictMode: false});
+        render(<Home/>, {reactStrictMode: false});
         await screen.findByRole('heading', {name: '家電一覧'});
 
         const fridgeRow = screen.getByRole('heading', {name: '冷蔵庫'}).closest('li');
@@ -53,7 +53,7 @@ describe('Home', () => {
         const fetchMock = jest.spyOn(global, 'fetch')
             .mockResolvedValueOnce(createResponse('bad', 500))
             .mockResolvedValueOnce(createResponse(catalog));
-        render(<Home />, {reactStrictMode: false});
+        render(<Home/>, {reactStrictMode: false});
 
         expect(await screen.findByRole('alert')).toHaveTextContent('HTTP 500');
         expect(screen.queryByRole('heading', {name: '0.0A'})).not.toBeInTheDocument();
@@ -65,7 +65,7 @@ describe('Home', () => {
 
     it('adds a user appliance as enabled and distinguishes starting state', async () => {
         jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(catalog));
-        render(<Home />, {reactStrictMode: false});
+        render(<Home/>, {reactStrictMode: false});
         await screen.findByRole('heading', {name: '家電一覧'});
 
         fireEvent.change(screen.getByLabelText(/家電名/), {target: {value: '扇風機'}});
@@ -82,7 +82,7 @@ describe('Home', () => {
 
     it('keeps the committed limit when a non-tenth value is rejected', async () => {
         jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(catalog));
-        render(<Home />, {reactStrictMode: false});
+        render(<Home/>, {reactStrictMode: false});
         await screen.findByRole('heading', {name: '家電一覧'});
         fireEvent.change(screen.getByRole('textbox', {name: '上限アンペア数'}), {target: {value: '2.05'}});
         fireEvent.click(screen.getByRole('button', {name: '適用'}));
@@ -93,7 +93,7 @@ describe('Home', () => {
 
     it('explains that the appliance value is capped to preserve exact totals', async () => {
         jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(catalog));
-        render(<Home />, {reactStrictMode: false});
+        render(<Home/>, {reactStrictMode: false});
         await screen.findByRole('heading', {name: '家電一覧'});
 
         expect(screen.getByText(/上限は20\.0Aに、家電はCSVの初期状態に戻ります/)).toBeInTheDocument();
@@ -117,7 +117,7 @@ describe('Home', () => {
             ),
         ].join('\n');
         jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(maxCatalog));
-        render(<Home />, {reactStrictMode: false});
+        render(<Home/>, {reactStrictMode: false});
         await screen.findByRole('heading', {name: '家電一覧'});
 
         expect(screen.getByRole('heading', {name: formatAmps(MAX_APPLIANCE_AMPS_TENTHS * MAX_APPLIANCES)})).toBeInTheDocument();
@@ -134,7 +134,7 @@ describe('Home', () => {
             ...Array.from({length: 50}, (_, index) => `家電${index},1.0,,false,参考値`),
         ].join('\n');
         jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(fiftyAppliances));
-        render(<Home />, {reactStrictMode: false});
+        render(<Home/>, {reactStrictMode: false});
         await screen.findByRole('heading', {name: '家電一覧'});
         fireEvent.change(screen.getByLabelText(/家電名/), {target: {value: '追加分'}});
         fireEvent.change(screen.getByLabelText(/運転中アンペア数/), {target: {value: '1.0'}});
@@ -149,7 +149,7 @@ describe('Home', () => {
 扇風機,1.0,,false,1台目
 扇風機,1.0,,false,2台目`;
         jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(duplicateCatalog));
-        render(<Home />, {reactStrictMode: false});
+        render(<Home/>, {reactStrictMode: false});
         await screen.findByRole('heading', {name: '家電一覧'});
 
         const switches = screen.getAllByRole('switch', {name: '扇風機を集計に含める'});
@@ -162,7 +162,7 @@ describe('Home', () => {
 
     it('explains that an inactive appliance is not counted when starting has no startup value', async () => {
         jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(catalog));
-        render(<Home />, {reactStrictMode: false});
+        render(<Home/>, {reactStrictMode: false});
         await screen.findByRole('heading', {name: '家電一覧'});
         fireEvent.click(screen.getByRole('switch', {name: '冷蔵庫を起動中にする'}));
 
@@ -174,14 +174,15 @@ describe('Home', () => {
 
     it('cancels the latest retry request when unmounted', async () => {
         let retrySignal: AbortSignal | null | undefined;
-        const pendingRetry = new Promise<Response>(() => {});
+        const pendingRetry = new Promise<Response>(() => {
+        });
         jest.spyOn(global, 'fetch')
             .mockRejectedValueOnce(new Error('network failure'))
             .mockImplementationOnce((_input, init) => {
                 retrySignal = init?.signal;
                 return pendingRetry;
             });
-        const {unmount} = render(<Home />, {reactStrictMode: false});
+        const {unmount} = render(<Home/>, {reactStrictMode: false});
 
         const error = await screen.findByRole('alert');
         expect(error).toHaveTextContent('network failure');
@@ -198,7 +199,7 @@ describe('Home', () => {
 冷蔵庫,2.5,4.0,false,目安
 電子レンジ,15.0,,false,目安`;
         jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(editCatalog));
-        render(<Home />, {reactStrictMode: false});
+        render(<Home/>, {reactStrictMode: false});
         await screen.findByRole('heading', {name: '家電一覧'});
         fireEvent.click(screen.getByRole('switch', {name: '冷蔵庫を集計に含める'}));
         fireEvent.click(screen.getByRole('switch', {name: '冷蔵庫を起動中にする'}));
