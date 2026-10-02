@@ -477,10 +477,7 @@ export default function AmpereDashboard() {
                             </aside>
                         )}
 
-                        <p className="amp-safety-note">
-                            <strong>ご利用上の注意</strong>
-                            100V家電を対象にした家全体の目安です。実際のブレーカー遮断を保証するものではありません。
-                        </p>
+                        <p className="amp-muted amp-safety-note">※100V家電用の目安数値です（遮断保証なし）</p>
 
                         <AmpereChart
                             appliances={dashboard.appliances}
