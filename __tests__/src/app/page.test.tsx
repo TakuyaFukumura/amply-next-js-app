@@ -31,6 +31,17 @@ describe('Home', () => {
         expect(screen.getByRole('img')).toHaveAccessibleName(/上限到達/);
     });
 
+    it('includes the refrigerator in usage by default', async () => {
+        const initiallyEnabledCatalog = catalog.replace('冷蔵庫,2.5,,false', '冷蔵庫,2.5,,true');
+        jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(initiallyEnabledCatalog));
+        render(<Home/>, {reactStrictMode: false});
+        await screen.findByRole('heading', {name: '家電一覧'});
+
+        expect(screen.getByRole('switch', {name: '冷蔵庫を集計に含める'})).toHaveAttribute('aria-checked', 'true');
+        expect(screen.getByRole('heading', {name: '2.5A'})).toBeInTheDocument();
+        expect(screen.getByRole('switch', {name: '冷蔵庫を起動中にする'})).toHaveAttribute('aria-checked', 'false');
+    });
+
     it('shows configured running and startup amps separately from current usage', async () => {
         const configuredCatalog = `name,runningAmps,startupAmps,initiallyEnabled,note
 冷蔵庫,2.5,4.0,false,目安

@@ -73,7 +73,9 @@ describe('parseCatalog', () => {
             'ドライヤー', 'アイロン', 'ヘアアイロン', 'ノートPC', 'デスクトップPC', 'ルーター',
         ]);
         expect(rows.map((row) => row.runningAmpsTenths)).toEqual([25, 150, 50, 130, 100, 130, 120, 140, 15, 7, 15, 2]);
-        expect(rows.every((row) => !row.enabled && row.startupAmpsTenths === null)).toBe(true);
+        expect(rows.find((row) => row.name === '冷蔵庫')?.enabled).toBe(true);
+        expect(rows.filter((row) => row.name !== '冷蔵庫').every((row) => !row.enabled)).toBe(true);
+        expect(rows.every((row) => row.startupAmpsTenths === null)).toBe(true);
         expect(rows.find((row) => row.name === 'ノートPC')?.note).toContain('0.1A刻みに切り上げた目安');
         expect(rows.find((row) => row.name === 'ルーター')?.note).toContain('0.1A刻みに切り上げた目安');
     });
