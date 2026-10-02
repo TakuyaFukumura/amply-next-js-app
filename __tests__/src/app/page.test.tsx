@@ -4,6 +4,7 @@ import {formatAmps, MAX_APPLIANCE_AMPS_TENTHS, MAX_APPLIANCES} from '../../../sr
 
 const catalog = `name,runningAmps,startupAmps,initiallyEnabled,note
 冷蔵庫,2.5,,false,200L級の目安
+エアコン,6.0,,false,100V・6畳用の目安
 電子レンジ,15.0,,false,加熱時の目安`;
 
 const createResponse = (body: string, status = 200): Response => ({
@@ -31,14 +32,17 @@ describe('Home', () => {
         expect(screen.getByRole('img')).toHaveAccessibleName(/上限到達/);
     });
 
-    it('includes the refrigerator in usage by default', async () => {
-        const initiallyEnabledCatalog = catalog.replace('冷蔵庫,2.5,,false', '冷蔵庫,2.5,,true');
+    it('includes the refrigerator and air conditioner in usage by default', async () => {
+        const initiallyEnabledCatalog = catalog
+            .replace('冷蔵庫,2.5,,false', '冷蔵庫,2.5,,true')
+            .replace('エアコン,6.0,,false', 'エアコン,6.0,,true');
         jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(initiallyEnabledCatalog));
         render(<Home/>, {reactStrictMode: false});
         await screen.findByRole('heading', {name: '家電一覧'});
 
         expect(screen.getByRole('switch', {name: '冷蔵庫を集計に含める'})).toHaveAttribute('aria-checked', 'true');
-        expect(screen.getByRole('heading', {name: '2.5A'})).toBeInTheDocument();
+        expect(screen.getByRole('switch', {name: 'エアコンを集計に含める'})).toHaveAttribute('aria-checked', 'true');
+        expect(screen.getByRole('heading', {name: '8.5A'})).toBeInTheDocument();
         expect(screen.getByRole('switch', {name: '冷蔵庫を起動中にする'})).toHaveAttribute('aria-checked', 'false');
     });
 
