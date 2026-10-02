@@ -172,7 +172,7 @@ function ApplianceEditor({appliances, editing, onCancel, onDelete, onSave}: {
             <div className="amp-section-heading">
                 <div>
                     <p className="amp-eyebrow">家電管理</p>
-                    <h2 id="editor-heading">{editing ? '家電を編集' : '追加'}</h2>
+                    <h2 id="editor-heading">{editing ? '編集' : '追加'}</h2>
                 </div>
                 <span className="amp-count">{appliances.length} / {MAX_APPLIANCES} 台</span>
             </div>

@@ -276,6 +276,7 @@ describe('Home', () => {
         fireEvent.click(screen.getByRole('switch', {name: '冷蔵庫を集計に含める'}));
         fireEvent.click(screen.getByRole('switch', {name: '冷蔵庫を起動中にする'}));
         fireEvent.click(screen.getByRole('button', {name: '冷蔵庫'}));
+        expect(screen.getByRole('heading', {name: '編集'})).toBeInTheDocument();
         expect(screen.getByLabelText(/家電名/)).toHaveFocus();
         fireEvent.change(screen.getByLabelText(/家電名/), {target: {value: '冷蔵庫（編集）'}});
         fireEvent.change(screen.getByLabelText(/運転中アンペア数/), {target: {value: '3.0'}});
