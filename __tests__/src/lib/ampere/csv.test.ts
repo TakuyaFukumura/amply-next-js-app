@@ -80,7 +80,8 @@ describe('parseCatalog', () => {
         expect(rows.find((row) => row.name === 'ノートPC')?.enabled).toBe(true);
         expect(rows.find((row) => row.name === 'デスクトップPC')?.enabled).toBe(true);
         expect(rows.find((row) => row.name === 'ルーター')?.enabled).toBe(true);
-        expect(rows.filter((row) => !['冷蔵庫', 'エアコン', 'LED照明', 'ノートPC', 'デスクトップPC', 'ルーター'].includes(row.name))
+        expect(rows.find((row) => row.name === '掃除機')?.enabled).toBe(true);
+        expect(rows.filter((row) => !['冷蔵庫', 'エアコン', 'LED照明', '掃除機', 'ノートPC', 'デスクトップPC', 'ルーター'].includes(row.name))
             .every((row) => !row.enabled)).toBe(true);
         expect(rows.find((row) => row.name === '冷蔵庫')?.note).toContain('200L級を想定した目安');
         expect(rows.find((row) => row.name === 'エアコン')?.note).toContain('100V・6畳用');
