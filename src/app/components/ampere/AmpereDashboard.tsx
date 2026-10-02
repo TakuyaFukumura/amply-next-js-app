@@ -248,13 +248,22 @@ function ApplianceList({appliances, onToggle, onEdit}: {
 }) {
     const [applianceFilter, setApplianceFilter] = useState<'all' | 'enabled' | 'disabled'>('all');
     const [hideNotes, setHideNotes] = useState(false);
-    const visibleAppliances = appliances
-        .filter((appliance) => applianceFilter === 'all'
-            || appliance.enabled === (applianceFilter === 'enabled'))
+    const [initialOrderIds] = useState(() => [...appliances]
         .sort((first, second) =>
             Number(second.enabled) - Number(first.enabled)
             || getApplianceOperatingAmpsTenths(second) - getApplianceOperatingAmpsTenths(first)
-        );
+        )
+        .map((appliance) => appliance.id));
+    const appliancesById = new Map(appliances.map((appliance) => [appliance.id, appliance]));
+    const initialOrderIdSet = new Set(initialOrderIds);
+    const orderedAppliances = [
+        ...initialOrderIds
+            .map((id) => appliancesById.get(id))
+            .filter((appliance): appliance is Appliance => appliance !== undefined),
+        ...appliances.filter((appliance) => !initialOrderIdSet.has(appliance.id)),
+    ];
+    const visibleAppliances = orderedAppliances.filter((appliance) => applianceFilter === 'all'
+        || appliance.enabled === (applianceFilter === 'enabled'));
 
     return (
         <section className="amp-card" aria-labelledby="appliances-heading">

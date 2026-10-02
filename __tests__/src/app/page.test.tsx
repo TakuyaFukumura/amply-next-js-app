@@ -84,7 +84,7 @@ describe('Home', () => {
         expect(screen.getByRole('switch', {name: '冷蔵庫を起動中にする'})).toHaveAttribute('aria-checked', 'false');
     });
 
-    it('sorts enabled appliances first, then sorts each usage group by current amps', async () => {
+    it('sorts once on initial display and preserves order as appliance states change', async () => {
         const unsortedCatalog = `name,runningAmps,startupAmps,initiallyEnabled,note
 冷蔵庫,2.5,4.0,true,目安
 エアコン,6.0,,false,目安
@@ -107,12 +107,20 @@ describe('Home', () => {
 
         fireEvent.click(screen.getByRole('switch', {name: '冷蔵庫を起動中にする'}));
         expect(within(rows).getAllByRole('heading').map((heading) => heading.textContent)).toEqual([
-            '冷蔵庫',
             'デスクトップPC',
+            '冷蔵庫',
             '電子レンジ',
             'エアコン',
         ]);
         expect(screen.getByRole('heading', {name: '7.0A'})).toBeInTheDocument();
+
+        fireEvent.click(screen.getByRole('switch', {name: '電子レンジを集計に含める'}));
+        expect(within(rows).getAllByRole('heading').map((heading) => heading.textContent)).toEqual([
+            'デスクトップPC',
+            '冷蔵庫',
+            '電子レンジ',
+            'エアコン',
+        ]);
     });
 
     it('filters the appliance list to enabled appliances while keeping the registered count', async () => {
