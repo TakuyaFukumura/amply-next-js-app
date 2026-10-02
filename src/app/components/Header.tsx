@@ -1,6 +1,7 @@
 'use client';
 
 import {useSyncExternalStore} from 'react';
+import Link from 'next/link';
 import {useDarkMode} from './DarkModeProvider';
 
 const emptySubscribe = () => () => {
@@ -37,6 +38,22 @@ export default function Header() {
                         <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                             Amply
                         </h1>
+                        <nav className="ml-4 flex items-center gap-1 sm:ml-6 sm:gap-2" aria-label="メインメニュー">
+                            <Link
+                                className="rounded-lg px-2 py-2 text-sm font-medium text-gray-700
+                                hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 sm:px-3"
+                                href="/"
+                            >
+                                計算
+                            </Link>
+                            <Link
+                                className="rounded-lg px-2 py-2 text-sm font-medium text-gray-700
+                                hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 sm:px-3"
+                                href="/about"
+                            >
+                                解説
+                            </Link>
+                        </nav>
                     </div>
 
                     <div className="flex items-center">
