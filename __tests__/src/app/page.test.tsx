@@ -22,6 +22,7 @@ describe('Home', () => {
 
         expect(await screen.findByRole('heading', {name: '家電一覧'})).toBeInTheDocument();
         expect(screen.getByRole('heading', {name: '0.0A'})).toBeInTheDocument();
+        expect(screen.queryByText('比較する基準')).not.toBeInTheDocument();
         const totalHeading = screen.getByRole('heading', {name: '0.0A'});
         const safetyNote = screen.getByText('100V家電を対象にした家全体の目安です。実際のブレーカー遮断を保証するものではありません。');
         expect(totalHeading.compareDocumentPosition(safetyNote) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
