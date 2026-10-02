@@ -84,6 +84,30 @@ describe('Home', () => {
         expect(screen.getByRole('switch', {name: '冷蔵庫を起動中にする'})).toHaveAttribute('aria-checked', 'false');
     });
 
+    it('filters the appliance list to enabled appliances while keeping the registered count', async () => {
+        const partlyEnabledCatalog = catalog.replace('冷蔵庫,2.5,,false', '冷蔵庫,2.5,,true');
+        jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(partlyEnabledCatalog));
+        render(<Home/>, {reactStrictMode: false});
+        await screen.findByRole('heading', {name: '登録家電一覧'});
+
+        const filter = screen.getByRole('checkbox', {name: '使用中のみ表示'});
+        expect(screen.getByText('3 台')).toBeInTheDocument();
+        fireEvent.click(filter);
+
+        expect(screen.getByRole('heading', {name: '冷蔵庫'})).toBeInTheDocument();
+        expect(screen.queryByRole('heading', {name: 'エアコン'})).not.toBeInTheDocument();
+        expect(screen.queryByRole('heading', {name: '電子レンジ'})).not.toBeInTheDocument();
+        expect(screen.getByText('3 台')).toBeInTheDocument();
+
+        fireEvent.click(screen.getByRole('switch', {name: '冷蔵庫を集計に含める'}));
+        expect(screen.getByRole('status')).toHaveTextContent('使用中の家電はありません。');
+        expect(screen.getByText('3 台')).toBeInTheDocument();
+
+        fireEvent.click(filter);
+        expect(screen.getByRole('heading', {name: 'エアコン'})).toBeInTheDocument();
+        expect(screen.getByRole('heading', {name: '電子レンジ'})).toBeInTheDocument();
+    });
+
     it('shows configured running and startup amps separately from current usage', async () => {
         const configuredCatalog = `name,runningAmps,startupAmps,initiallyEnabled,note
 冷蔵庫,2.5,4.0,false,目安

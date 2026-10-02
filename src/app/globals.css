@@ -529,6 +529,17 @@ input:focus-visible {
     border-top: 1px solid var(--amp-border);
 }
 
+.amp-appliance-filter {
+    display: flex;
+    width: fit-content;
+    align-items: center;
+    gap: 0.45rem;
+    margin-bottom: 0.8rem;
+    color: var(--amp-muted);
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
 .amp-appliance-main {
     display: flex;
     justify-content: space-between;

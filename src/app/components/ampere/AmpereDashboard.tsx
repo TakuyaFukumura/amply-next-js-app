@@ -241,6 +241,9 @@ function ApplianceList({appliances, onToggle, onEdit}: {
     onToggle: (id: string, field: 'enabled' | 'starting') => void;
     onEdit: (appliance: Appliance) => void;
 }) {
+    const [enabledOnly, setEnabledOnly] = useState(false);
+    const visibleAppliances = enabledOnly ? appliances.filter((appliance) => appliance.enabled) : appliances;
+
     return (
         <section className="amp-card" aria-labelledby="appliances-heading">
             <div className="amp-section-heading">
@@ -249,11 +252,23 @@ function ApplianceList({appliances, onToggle, onEdit}: {
                 </div>
                 <span className="amp-count">{appliances.length} 台</span>
             </div>
+            {appliances.length > 0 && (
+                <label className="amp-appliance-filter">
+                    <input
+                        type="checkbox"
+                        checked={enabledOnly}
+                        onChange={(event) => setEnabledOnly(event.target.checked)}
+                    />
+                    使用中のみ表示
+                </label>
+            )}
             {appliances.length === 0 ? (
                 <p className="amp-empty">家電がありません。下の「家電を追加」フォームから登録できます。</p>
+            ) : visibleAppliances.length === 0 ? (
+                <p className="amp-empty" role="status">使用中の家電はありません。</p>
             ) : (
                 <ul className="amp-appliance-list">
-                    {appliances.map((appliance) => {
+                    {visibleAppliances.map((appliance) => {
                         const amount = getApplianceAmpsTenths(appliance);
                         return (
                             <li key={appliance.id} className="amp-appliance-row">
