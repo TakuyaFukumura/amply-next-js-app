@@ -242,6 +242,7 @@ function ApplianceList({appliances, onToggle, onEdit}: {
     onEdit: (appliance: Appliance) => void;
 }) {
     const [enabledOnly, setEnabledOnly] = useState(false);
+    const [hideNotes, setHideNotes] = useState(false);
     const visibleAppliances = enabledOnly ? appliances.filter((appliance) => appliance.enabled) : appliances;
 
     return (
@@ -253,14 +254,24 @@ function ApplianceList({appliances, onToggle, onEdit}: {
                 <span className="amp-count">{appliances.length} 台</span>
             </div>
             {appliances.length > 0 && (
-                <label className="amp-appliance-filter">
-                    <input
-                        type="checkbox"
-                        checked={enabledOnly}
-                        onChange={(event) => setEnabledOnly(event.target.checked)}
-                    />
-                    使用中のみ表示
-                </label>
+                <div className="amp-appliance-filters">
+                    <label className="amp-appliance-filter">
+                        <input
+                            type="checkbox"
+                            checked={enabledOnly}
+                            onChange={(event) => setEnabledOnly(event.target.checked)}
+                        />
+                        使用中のみ表示
+                    </label>
+                    <label className="amp-appliance-filter">
+                        <input
+                            type="checkbox"
+                            checked={hideNotes}
+                            onChange={(event) => setHideNotes(event.target.checked)}
+                        />
+                        メモを非表示
+                    </label>
+                </div>
             )}
             {appliances.length === 0 ? (
                 <p className="amp-empty">家電がありません。下の「家電を追加」フォームから登録できます。</p>
@@ -296,7 +307,9 @@ function ApplianceList({appliances, onToggle, onEdit}: {
                                                     : `起動中ですが無効のため集計されません。有効にすると運転中値 ${formatAmps(appliance.runningAmpsTenths)} を使用します。`}
                                             </p>
                                         )}
-                                        {appliance.note && <p className="amp-appliance-note">{appliance.note}</p>}
+                                        {appliance.note && !hideNotes && (
+                                            <p className="amp-appliance-note">{appliance.note}</p>
+                                        )}
                                     </div>
                                     <strong className="amp-appliance-value">{formatAmps(amount)}</strong>
                                 </div>

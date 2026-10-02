@@ -91,7 +91,14 @@ describe('Home', () => {
         await screen.findByRole('heading', {name: '登録家電一覧'});
 
         const filter = screen.getByRole('checkbox', {name: '使用中のみ表示'});
+        const hideNotes = screen.getByRole('checkbox', {name: 'メモを非表示'});
         expect(screen.getByText('3 台')).toBeInTheDocument();
+        expect(screen.getByText('200L級の目安')).toBeInTheDocument();
+        fireEvent.click(hideNotes);
+        expect(screen.queryByText('200L級の目安')).not.toBeInTheDocument();
+        fireEvent.click(hideNotes);
+        expect(screen.getByText('200L級の目安')).toBeInTheDocument();
+
         fireEvent.click(filter);
 
         expect(screen.getByRole('heading', {name: '冷蔵庫'})).toBeInTheDocument();
