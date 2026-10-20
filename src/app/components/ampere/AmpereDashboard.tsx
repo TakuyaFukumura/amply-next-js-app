@@ -71,8 +71,8 @@ function AmpereChart({appliances, limitTenths, totalTenths, status}: {
     const uniqueTicks = [...new Set(tickTenths)];
 
     const statusDescription = status === 'within'
-        ? '上限内'
-        : status === 'reached' ? '上限到達' : '上限超過';
+        ? '商用電源の契約上限内'
+        : status === 'reached' ? '商用電源の契約上限到達' : '商用電源の契約上限超過';
 
     return (
         <section className="amp-card amp-chart-card" aria-label="使用状況">
@@ -84,7 +84,7 @@ function AmpereChart({appliances, limitTenths, totalTenths, status}: {
             <div
                 className="amp-chart"
                 role="img"
-                aria-label={`家電ごとの積み上げグラフ。${statusDescription}。合計${formatAmps(totalTenths)}、上限${formatAmps(limitTenths)}。上限マーカーを破線で表示しています。`}
+                aria-label={`商用電源で使う家電ごとの積み上げグラフ。${statusDescription}。合計${formatAmps(totalTenths)}、契約上限${formatAmps(limitTenths)}。上限マーカーを破線で表示しています。`}
             >
                 <div className="amp-bar-track">
                     {groups.map((group, index) => (
@@ -107,7 +107,7 @@ function AmpereChart({appliances, limitTenths, totalTenths, status}: {
                         </span>
                     ))}
                 </div>
-                <p className="amp-marker-key"><span aria-hidden="true"/>破線: 上限 {formatAmps(limitTenths)}</p>
+                <p className="amp-marker-key"><span aria-hidden="true"/>破線: 商用電源の契約上限 {formatAmps(limitTenths)}</p>
             </div>
             {groups.length > 0 ? (
                 <ul className="amp-legend" aria-label="グラフの凡例">
@@ -381,7 +381,7 @@ function ApplianceList({appliances, onToggle, onEdit}: {
                                         onClick={() => onToggle(appliance.id, 'powerSource')}
                                     >
                                         <span aria-hidden="true"/>
-                                        電源: {appliance.powerSource === 'portable' ? 'ポータブル電源' : '家庭'}
+                                        電源: {appliance.powerSource === 'portable' ? 'ポータブル' : '商用'}
                                     </button>
                                 </div>
                             </li>
@@ -541,11 +541,11 @@ export default function AmpereDashboard() {
                     <>
                         <section className="amp-card amp-limit-card" aria-labelledby="limit-heading">
                             <div className="amp-limit-copy">
-                                <h2 id="limit-heading">上限アンペア数</h2>
-                                <p className="amp-muted">家庭側の契約アンペア数を設定します。</p>
+                                <h2 id="limit-heading">商用電源側の上限</h2>
+                                <p className="amp-muted">契約アンペア数を設定します。</p>
                             </div>
                             <div className="amp-limit-controls">
-                                <label className="amp-sr-only" htmlFor="limit-amps">上限アンペア数</label>
+                                <label className="amp-sr-only" htmlFor="limit-amps">商用電源の契約アンペア数</label>
                                 <select
                                     className="amp-limit-select"
                                     id="limit-amps"
@@ -562,7 +562,7 @@ export default function AmpereDashboard() {
                         <section className={`amp-summary amp-summary-${summary.status}`} aria-live="polite"
                                  aria-labelledby="summary-heading">
                             <div>
-                                <p className="amp-eyebrow">家庭側の合計</p>
+                                <p className="amp-eyebrow">商用電源側の合計</p>
                                 <div className="amp-summary-total">
                                     <h2 id="summary-heading">{formatAmps(summary.totalTenths)}</h2>
                                     <span className="amp-summary-percentage">
@@ -572,7 +572,7 @@ export default function AmpereDashboard() {
                             </div>
                             <div className="amp-status">
                                 <strong>
-                                    {summary.status === 'within' ? '✓ 上限内' : summary.status === 'reached' ? '＝ 上限到達' : '！ 上限超過'}
+                                    {summary.status === 'within' ? '✓ 契約上限内' : summary.status === 'reached' ? '＝ 契約上限到達' : '！ 契約上限超過'}
                                 </strong>
                                 {summary.status !== 'exceeded' &&
                                     <span>残り {formatAmps(summary.remainingTenths)}</span>}
@@ -583,8 +583,8 @@ export default function AmpereDashboard() {
 
                         {summary.status === 'exceeded' && (
                             <aside className="amp-over-limit" role="status">
-                                <strong>上限を超えています</strong>
-                                <span>{formatAmps(-summary.remainingTenths)}超過しています。家電の使用状態を確認してください。</span>
+                                <strong>商用電源の契約アンペア数を超えています</strong>
+                                <span>{formatAmps(-summary.remainingTenths)}超過しています。商用電源で使う家電の状態を確認してください。</span>
                             </aside>
                         )}
 
@@ -629,13 +629,9 @@ export default function AmpereDashboard() {
                                     </p>
                                 )}
                                 <p className="amp-muted">
-                                    ポータブル電源は契約アンペア数や建物の配線容量を増やしません。建物の配線へ給電せず、家電に直接接続してください。
-                                </p>
-                                <p className="amp-muted">
                                     {POWER_STATION_CAPACITY_WH.toLocaleString('ja-JP')}Wh容量（実用目安
                                     {Math.round(POWER_STATION_CAPACITY_WH * AC_USABLE_CAPACITY_RATIO).toLocaleString('ja-JP')}Wh）、
                                     AC定格出力{AC_OUTPUT_LIMIT_W.toLocaleString('ja-JP')}W級を想定した試算です。
-                                    100V換算であり、実際の出力・使用時間は機器や条件で異なります。
                                 </p>
                             </section>
                         )}

@@ -26,6 +26,8 @@ describe('Home', () => {
         expect(screen.queryByText('合計 0.0A', {exact: true})).not.toBeInTheDocument();
         expect(screen.queryByText('家電ごとの内訳')).not.toBeInTheDocument();
         expect(screen.getByRole('region', {name: '使用状況'})).toBeInTheDocument();
+        expect(screen.getByText('商用電源側の合計')).toBeInTheDocument();
+        expect(screen.queryByText(/100V換算であり、実際の出力・使用時間は機器や条件で異なります/)).not.toBeInTheDocument();
         expect(screen.queryByText('上限 20.0A', {exact: true})).not.toBeInTheDocument();
         expect(screen.getByText('（0.0%）')).toBeInTheDocument();
         expect(screen.queryByText('比較する基準')).not.toBeInTheDocument();
@@ -38,9 +40,9 @@ describe('Home', () => {
         expect(screen.getByText('（12.5%）')).toBeInTheDocument();
         expect(screen.getByText('(12.5%)')).toBeInTheDocument();
 
-        const limitSelect = screen.getByRole('combobox', {name: '上限アンペア数'});
+        const limitSelect = screen.getByRole('combobox', {name: '商用電源の契約アンペア数'});
         fireEvent.change(limitSelect, {target: {value: '100'}});
-        expect(screen.getByText('✓ 上限内')).toBeInTheDocument();
+        expect(screen.getByText('✓ 契約上限内')).toBeInTheDocument();
         expect(screen.getByText('残り 7.5A')).toBeInTheDocument();
         expect(screen.getByText('（25.0%）')).toBeInTheDocument();
         expect(screen.getByText('(25.0%)')).toBeInTheDocument();
@@ -57,12 +59,14 @@ describe('Home', () => {
         expect(applianceRow).not.toBeNull();
         expect(within(applianceRow as HTMLElement).getAllByRole('switch').map((toggle) => toggle.getAttribute('aria-label')))
             .toEqual(['冷蔵庫を集計に含める', '冷蔵庫を起動中にする', '冷蔵庫の使用電源']);
+        expect(within(applianceRow as HTMLElement).getByText('電源: 商用')).toBeInTheDocument();
 
         fireEvent.click(screen.getByRole('switch', {name: '冷蔵庫を集計に含める'}));
         fireEvent.click(screen.getByRole('switch', {name: '冷蔵庫を起動中にする'}));
         fireEvent.click(screen.getByRole('switch', {name: '冷蔵庫の使用電源'}));
 
         expect(screen.getByRole('switch', {name: '冷蔵庫の使用電源'})).toHaveAttribute('aria-checked', 'true');
+        expect(within(applianceRow as HTMLElement).getByText('電源: ポータブル')).toBeInTheDocument();
         expect(screen.getByRole('heading', {name: '0.0A'})).toBeInTheDocument();
         const portableSection = screen.getByRole('region', {name: 'ポータブル電源の使用状況'});
         expect(within(portableSection).getByText('1,600W / 1,550W')).toBeInTheDocument();
@@ -80,7 +84,7 @@ describe('Home', () => {
         render(<Home/>, {reactStrictMode: false});
         await screen.findByRole('heading', {name: '登録家電一覧'});
 
-        const limitSelect = screen.getByRole('combobox', {name: '上限アンペア数'});
+        const limitSelect = screen.getByRole('combobox', {name: '商用電源の契約アンペア数'});
         expect(limitSelect).toHaveValue('200');
         expect(within(limitSelect).getAllByRole('option').map((option) => option.textContent)).toEqual([
             '10A',
