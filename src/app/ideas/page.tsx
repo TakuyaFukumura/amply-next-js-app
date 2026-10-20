@@ -2,35 +2,23 @@ import {readFileSync} from 'node:fs';
 import {join} from 'node:path';
 import type {Metadata} from 'next';
 import {parseCatalog} from '../../lib/ampere/csv';
+import {
+    AC_OUTPUT_LIMIT_W,
+    AC_SINGLE_PORT_LIMIT_W,
+    formatEstimatedRuntime,
+    getPowerWatts,
+    POWER_STATION_CAPACITY_WH,
+} from '../../lib/ampere/portablePower';
 
 export const metadata: Metadata = {
     title: 'ポータブル電源の活用アイデア | Amply',
     description: '容量1,024Wh、AC定格出力1,550W級のポータブル電源を想定し、家電別の連続使用時間を試算します。',
 };
 
-const POWER_STATION_CAPACITY_WH = 1024;
-const AC_OUTPUT_LIMIT_W = 1550;
-const AC_SINGLE_PORT_LIMIT_W = 1500;
-const AC_USABLE_CAPACITY_RATIO = 0.85;
-const HOUSEHOLD_VOLTAGE = 100;
 const appliances = parseCatalog(readFileSync(
     join(process.cwd(), 'public', 'data', 'appliances.csv'),
     'utf8'
 ));
-
-function getPowerWatts(ampsTenths: number): number {
-    return ampsTenths * HOUSEHOLD_VOLTAGE / 10;
-}
-
-function formatRuntime(ampsTenths: number): string {
-    const watts = getPowerWatts(ampsTenths);
-    if (watts <= 0) return '算出できません';
-
-    const runtimeHours = (POWER_STATION_CAPACITY_WH * AC_USABLE_CAPACITY_RATIO) / watts;
-    return runtimeHours < 1
-        ? `約${Math.round(runtimeHours * 60)}分`
-        : `約${runtimeHours.toFixed(1)}時間`;
-}
 
 export default function IdeasPage() {
     return (
@@ -59,7 +47,7 @@ export default function IdeasPage() {
                         日中に家庭のコンセントから同時に取る電流を抑える工夫になります。
                     </p>
                     <p>
-                        充電中は充電器の入力分が家庭側の負荷になります。夜間でも給湯器や暖房などが動いている場合があるため、
+                        充電中は充電器の入力分が商用電源側の負荷になります。夜間でも給湯器や暖房などが動いている場合があるため、
                         ポータブル電源の入力電力と家全体の使用状況を確認し、必要なら充電速度を下げられる設定を利用してください。
                     </p>
                     <p>
@@ -68,7 +56,7 @@ export default function IdeasPage() {
                     </p>
                     <p>
                         ポータブル電源は契約アンペア数や建物の配線容量を増やすものではありません。
-                        バッテリーが空になれば充電が必要で、家庭のコンセントで充電するときは充電器の入力分が家庭側の負荷になります。
+                        バッテリーが空になれば充電が必要で、家庭のコンセントで充電するときは充電器の入力分が商用電源側の負荷になります。
                         充電は、ほかの家電の使用が少ない時間に行う方法も検討してください。
                     </p>
                 </section>
@@ -143,7 +131,7 @@ export default function IdeasPage() {
                                             {getPowerWatts(appliance.startupAmpsTenths ?? appliance.runningAmpsTenths)
                                                 .toLocaleString('ja-JP')}W
                                         </td>
-                                        <td>{formatRuntime(appliance.runningAmpsTenths)}</td>
+                                        <td>{formatEstimatedRuntime(appliance.runningAmpsTenths)}</td>
                                         <td>{appliance.note}</td>
                                     </tr>
                                 ))}

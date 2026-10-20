@@ -11,6 +11,7 @@ describe('parseCatalog', () => {
             runningAmpsTenths: 150,
             startupAmpsTenths: null,
             enabled: false,
+            powerSource: 'household',
             note: '目安 "大"\r\n注記',
         });
     });

@@ -348,6 +348,26 @@ input:focus-visible {
     font-size: 1.05rem;
 }
 
+.amp-power-station-summary {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem 1rem;
+    margin-top: 1rem;
+    padding: 1rem 1.2rem;
+    border-radius: 0.85rem;
+    background: var(--amp-soft);
+}
+
+.amp-power-station-summary strong {
+    font-size: clamp(1.35rem, 5vw, 2rem);
+}
+
+.amp-power-station-card > .amp-muted {
+    margin: 0.75rem 0 0;
+}
+
 .amp-over-limit,
 .amp-error-card {
     margin-top: 1rem;
@@ -635,6 +655,10 @@ input:focus-visible {
     background: transparent;
     color: var(--amp-muted);
     font-size: 0.82rem;
+}
+
+.amp-switch-source {
+    margin-left: auto;
 }
 
 .amp-switch > span {

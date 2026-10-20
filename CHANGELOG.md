@@ -5,9 +5,11 @@
 フォーマットは [Keep a Changelog](https://keepachangelog.com/ja/1.0.0/) に基づいており、
 このプロジェクトは [Semantic Versioning](https://semver.org/lang/ja/) に従っています。
 
-## [Unreleased]
+## [0.7.0] - 2026-10-20
 
 ### Added
+
+- 家電ごとの使用電源振り分け、ポータブル電源のみの一覧フィルター、商用電源側・ポータブル電源側それぞれの負荷試算・グラフを追加
 
 ### Changed
 

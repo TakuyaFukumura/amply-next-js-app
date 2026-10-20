@@ -124,6 +124,7 @@ export function parseCatalog(source: string): Appliance[] {
             startupAmpsTenths,
             enabled: initiallyEnabled === 'true',
             starting: false,
+            powerSource: 'household',
             note,
             origin: 'catalog',
         };

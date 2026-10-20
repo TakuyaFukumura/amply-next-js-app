@@ -9,6 +9,7 @@ const appliance = (id: string, name: string, value: number, options: Partial<App
     startupAmpsTenths: null,
     enabled: true,
     starting: false,
+    powerSource: 'household',
     note: '',
     origin: 'catalog',
     ...options,
