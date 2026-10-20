@@ -46,7 +46,7 @@ describe('Home', () => {
         expect(screen.getByText('残り 7.5A')).toBeInTheDocument();
         expect(screen.getByText('（25.0%）')).toBeInTheDocument();
         expect(screen.getByText('(25.0%)')).toBeInTheDocument();
-        expect(screen.getByRole('img')).toHaveAccessibleName(/上限内/);
+        expect(screen.getByRole('img', {name: /商用電源の契約上限内/})).toBeInTheDocument();
     });
 
     it('moves an appliance load to the portable power station and checks startup output', async () => {
@@ -69,13 +69,20 @@ describe('Home', () => {
         expect(within(applianceRow as HTMLElement).getByText('電源: ポータブル')).toBeInTheDocument();
         expect(screen.getByRole('heading', {name: '0.0A'})).toBeInTheDocument();
         const portableSection = screen.getByRole('region', {name: 'ポータブル電源の使用状況'});
+        const householdChart = screen.getByRole('region', {name: '使用状況'});
+        expect(householdChart.compareDocumentPosition(portableSection) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
         expect(within(portableSection).getByText('1,600W / 1,550W')).toBeInTheDocument();
         expect(within(portableSection).getByText(/運転時の使用時間目安: 約3.5時間/)).toBeInTheDocument();
         expect(within(portableSection).getByText(/定格出力を超えています/)).toBeInTheDocument();
         expect(within(portableSection).getByText(/1ポート最大1,500W/)).toBeInTheDocument();
+        expect(within(portableSection).getByRole('img'))
+            .toHaveAccessibleName(/ポータブル電源で使用中の家電ごとの推定出力グラフ。合計1,600W、AC定格出力上限1,550W/);
+        expect(within(portableSection).getByRole('list', {name: 'ポータブル電源グラフの凡例'}))
+            .toHaveTextContent('冷蔵庫');
 
         fireEvent.click(screen.getByRole('switch', {name: '冷蔵庫を起動中にする'}));
         expect(within(portableSection).getByText('250W / 1,550W')).toBeInTheDocument();
+        expect(within(portableSection).getByRole('img')).toHaveAccessibleName(/合計250W/);
         expect(within(portableSection).queryByText(/定格出力を超えています/)).not.toBeInTheDocument();
     });
 
@@ -214,6 +221,29 @@ describe('Home', () => {
         expect(screen.getByRole('heading', {name: '冷蔵庫'})).toBeInTheDocument();
         expect(screen.getByRole('heading', {name: 'エアコン'})).toBeInTheDocument();
         expect(screen.getByRole('heading', {name: '電子レンジ'})).toBeInTheDocument();
+    });
+
+    it('filters the appliance list to portable power assignments and combines with usage filters', async () => {
+        jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(catalog));
+        render(<Home/>, {reactStrictMode: false});
+        await screen.findByRole('heading', {name: '登録家電一覧'});
+
+        fireEvent.click(screen.getByRole('switch', {name: '電子レンジの使用電源'}));
+        const portableFilter = screen.getByRole('checkbox', {name: 'ポータブル電源のみ表示'});
+        fireEvent.click(portableFilter);
+
+        expect(portableFilter).toBeChecked();
+        expect(screen.getByRole('heading', {name: '電子レンジ'})).toBeInTheDocument();
+        expect(screen.queryByRole('heading', {name: '冷蔵庫'})).not.toBeInTheDocument();
+        expect(screen.getByText('3 台')).toBeInTheDocument();
+
+        fireEvent.click(screen.getByRole('checkbox', {name: '使用中のみ表示'}));
+        expect(screen.getByRole('status')).toHaveTextContent('使用中のポータブル電源家電はありません。');
+        fireEvent.click(screen.getByRole('checkbox', {name: '未使用のみ表示'}));
+        expect(screen.getByRole('heading', {name: '電子レンジ'})).toBeInTheDocument();
+
+        fireEvent.click(screen.getByRole('switch', {name: '電子レンジの使用電源'}));
+        expect(screen.getByRole('status')).toHaveTextContent('未使用のポータブル電源家電はありません。');
     });
 
     it('shows configured running and startup amps separately from current usage', async () => {
