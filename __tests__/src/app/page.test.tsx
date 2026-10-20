@@ -53,6 +53,11 @@ describe('Home', () => {
         render(<Home/>, {reactStrictMode: false});
         await screen.findByRole('heading', {name: '登録家電一覧'});
 
+        const applianceRow = screen.getByRole('heading', {name: '冷蔵庫'}).closest('li');
+        expect(applianceRow).not.toBeNull();
+        expect(within(applianceRow as HTMLElement).getAllByRole('switch').map((toggle) => toggle.getAttribute('aria-label')))
+            .toEqual(['冷蔵庫を集計に含める', '冷蔵庫を起動中にする', '冷蔵庫の使用電源']);
+
         fireEvent.click(screen.getByRole('switch', {name: '冷蔵庫を集計に含める'}));
         fireEvent.click(screen.getByRole('switch', {name: '冷蔵庫を起動中にする'}));
         fireEvent.click(screen.getByRole('switch', {name: '冷蔵庫の使用電源'}));

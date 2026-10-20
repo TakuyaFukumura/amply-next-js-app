@@ -657,6 +657,10 @@ input:focus-visible {
     font-size: 0.82rem;
 }
 
+.amp-switch-source {
+    margin-left: auto;
+}
+
 .amp-switch > span {
     position: relative;
     width: 32px;

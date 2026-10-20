@@ -355,17 +355,6 @@ function ApplianceList({appliances, onToggle, onEdit}: {
                                     <button
                                         type="button"
                                         role="switch"
-                                        aria-checked={appliance.powerSource === 'portable'}
-                                        aria-label={`${appliance.name}の使用電源`}
-                                        className={`amp-switch ${appliance.powerSource === 'portable' ? 'is-on' : ''}`}
-                                        onClick={() => onToggle(appliance.id, 'powerSource')}
-                                    >
-                                        <span aria-hidden="true"/>
-                                        電源: {appliance.powerSource === 'portable' ? 'ポータブル電源' : '家庭'}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        role="switch"
                                         aria-checked={appliance.enabled}
                                         aria-label={`${appliance.name}を集計に含める`}
                                         className={`amp-switch ${appliance.enabled ? 'is-on' : ''}`}
@@ -382,6 +371,17 @@ function ApplianceList({appliances, onToggle, onEdit}: {
                                         onClick={() => onToggle(appliance.id, 'starting')}
                                     >
                                         <span aria-hidden="true"/>起動中
+                                    </button>
+                                    <button
+                                        type="button"
+                                        role="switch"
+                                        aria-checked={appliance.powerSource === 'portable'}
+                                        aria-label={`${appliance.name}の使用電源`}
+                                        className={`amp-switch amp-switch-source ${appliance.powerSource === 'portable' ? 'is-on' : ''}`}
+                                        onClick={() => onToggle(appliance.id, 'powerSource')}
+                                    >
+                                        <span aria-hidden="true"/>
+                                        電源: {appliance.powerSource === 'portable' ? 'ポータブル電源' : '家庭'}
                                     </button>
                                 </div>
                             </li>
