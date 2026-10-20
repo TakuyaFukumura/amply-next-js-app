@@ -5,6 +5,7 @@ export type Appliance = {
     startupAmpsTenths: number | null;
     enabled: boolean;
     starting: boolean;
+    powerSource: 'household' | 'portable';
     note: string;
     origin: 'catalog' | 'user';
 };

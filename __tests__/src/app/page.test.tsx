@@ -47,6 +47,29 @@ describe('Home', () => {
         expect(screen.getByRole('img')).toHaveAccessibleName(/上限内/);
     });
 
+    it('moves an appliance load to the portable power station and checks startup output', async () => {
+        const portableCatalog = catalog.replace('冷蔵庫,2.5,,false', '冷蔵庫,2.5,16.0,false');
+        jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(portableCatalog));
+        render(<Home/>, {reactStrictMode: false});
+        await screen.findByRole('heading', {name: '登録家電一覧'});
+
+        fireEvent.click(screen.getByRole('switch', {name: '冷蔵庫を集計に含める'}));
+        fireEvent.click(screen.getByRole('switch', {name: '冷蔵庫を起動中にする'}));
+        fireEvent.click(screen.getByRole('switch', {name: '冷蔵庫の使用電源'}));
+
+        expect(screen.getByRole('switch', {name: '冷蔵庫の使用電源'})).toHaveAttribute('aria-checked', 'true');
+        expect(screen.getByRole('heading', {name: '0.0A'})).toBeInTheDocument();
+        const portableSection = screen.getByRole('region', {name: 'ポータブル電源の使用状況'});
+        expect(within(portableSection).getByText('1,600W / 1,550W')).toBeInTheDocument();
+        expect(within(portableSection).getByText(/運転時の使用時間目安: 約3.5時間/)).toBeInTheDocument();
+        expect(within(portableSection).getByText(/定格出力を超えています/)).toBeInTheDocument();
+        expect(within(portableSection).getByText(/1ポート最大1,500W/)).toBeInTheDocument();
+
+        fireEvent.click(screen.getByRole('switch', {name: '冷蔵庫を起動中にする'}));
+        expect(within(portableSection).getByText('250W / 1,550W')).toBeInTheDocument();
+        expect(within(portableSection).queryByText(/定格出力を超えています/)).not.toBeInTheDocument();
+    });
+
     it('offers upper limits from 10A to 60A in 10A increments', async () => {
         jest.spyOn(global, 'fetch').mockResolvedValue(createResponse(catalog));
         render(<Home/>, {reactStrictMode: false});

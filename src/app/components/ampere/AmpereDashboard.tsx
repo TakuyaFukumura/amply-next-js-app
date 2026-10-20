@@ -15,6 +15,14 @@ import {
     MAX_APPLIANCES,
     parseAmpsTenths,
 } from '../../../lib/ampere/validation';
+import {
+    AC_USABLE_CAPACITY_RATIO,
+    AC_OUTPUT_LIMIT_W,
+    AC_SINGLE_PORT_LIMIT_W,
+    formatEstimatedRuntime,
+    getPowerWatts,
+    POWER_STATION_CAPACITY_WH,
+} from '../../../lib/ampere/portablePower';
 import type {AmpereSummary, Appliance, ApplianceInput} from '../../../lib/ampere/types';
 
 type DashboardState =
@@ -243,7 +251,7 @@ function ApplianceEditor({appliances, editing, onCancel, onDelete, onSave}: {
 
 function ApplianceList({appliances, onToggle, onEdit}: {
     appliances: Appliance[];
-    onToggle: (id: string, field: 'enabled' | 'starting') => void;
+    onToggle: (id: string, field: 'enabled' | 'starting' | 'powerSource') => void;
     onEdit: (appliance: Appliance) => void;
 }) {
     const [applianceFilter, setApplianceFilter] = useState<'all' | 'enabled' | 'disabled'>('all');
@@ -347,6 +355,17 @@ function ApplianceList({appliances, onToggle, onEdit}: {
                                     <button
                                         type="button"
                                         role="switch"
+                                        aria-checked={appliance.powerSource === 'portable'}
+                                        aria-label={`${appliance.name}の使用電源`}
+                                        className={`amp-switch ${appliance.powerSource === 'portable' ? 'is-on' : ''}`}
+                                        onClick={() => onToggle(appliance.id, 'powerSource')}
+                                    >
+                                        <span aria-hidden="true"/>
+                                        電源: {appliance.powerSource === 'portable' ? 'ポータブル電源' : '家庭'}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        role="switch"
                                         aria-checked={appliance.enabled}
                                         aria-label={`${appliance.name}を集計に含める`}
                                         className={`amp-switch ${appliance.enabled ? 'is-on' : ''}`}
@@ -417,10 +436,33 @@ export default function AmpereDashboard() {
             });
     };
 
-    const summary = useMemo(
-        () => dashboard.status === 'ready' ? calculateSummary(dashboard.appliances, limitTenths) : null,
-        [dashboard, limitTenths]
+    const householdAppliances = useMemo(
+        () => dashboard.status === 'ready'
+            ? dashboard.appliances.filter((appliance) => appliance.powerSource === 'household')
+            : [],
+        [dashboard]
     );
+    const summary = useMemo(
+        () => dashboard.status === 'ready' ? calculateSummary(householdAppliances, limitTenths) : null,
+        [dashboard, householdAppliances, limitTenths]
+    );
+    const portableSummary = useMemo(() => {
+        if (dashboard.status !== 'ready') return null;
+        const activeAppliances = dashboard.appliances.filter(
+            (appliance) => appliance.enabled && appliance.powerSource === 'portable'
+        );
+        return {
+            operatingAmpsTenths: activeAppliances.reduce(
+                (total, appliance) => total + getApplianceOperatingAmpsTenths(appliance),
+                0
+            ),
+            runningAmpsTenths: activeAppliances.reduce(
+                (total, appliance) => total + appliance.runningAmpsTenths,
+                0
+            ),
+            activeAppliances,
+        };
+    }, [dashboard]);
 
     const updateAppliance = (id: string, update: (appliance: Appliance) => Appliance) => {
         setDashboard((current) => current.status === 'ready'
@@ -460,6 +502,7 @@ export default function AmpereDashboard() {
                 ...input,
                 enabled: true,
                 starting: false,
+                powerSource: 'household',
                 origin: 'user',
             }],
         });
@@ -499,6 +542,7 @@ export default function AmpereDashboard() {
                         <section className="amp-card amp-limit-card" aria-labelledby="limit-heading">
                             <div className="amp-limit-copy">
                                 <h2 id="limit-heading">上限アンペア数</h2>
+                                <p className="amp-muted">家庭側の契約アンペア数を設定します。</p>
                             </div>
                             <div className="amp-limit-controls">
                                 <label className="amp-sr-only" htmlFor="limit-amps">上限アンペア数</label>
@@ -518,7 +562,7 @@ export default function AmpereDashboard() {
                         <section className={`amp-summary amp-summary-${summary.status}`} aria-live="polite"
                                  aria-labelledby="summary-heading">
                             <div>
-                                <p className="amp-eyebrow">現在の合計</p>
+                                <p className="amp-eyebrow">家庭側の合計</p>
                                 <div className="amp-summary-total">
                                     <h2 id="summary-heading">{formatAmps(summary.totalTenths)}</h2>
                                     <span className="amp-summary-percentage">
@@ -544,20 +588,78 @@ export default function AmpereDashboard() {
                             </aside>
                         )}
 
+                        {portableSummary && (
+                            <section className="amp-card amp-power-station-card" aria-labelledby="portable-power-heading">
+                                <div className="amp-section-heading">
+                                    <div>
+                                        <p className="amp-eyebrow">電源を分けた場合の試算</p>
+                                        <h2 id="portable-power-heading">ポータブル電源の使用状況</h2>
+                                    </div>
+                                </div>
+                                <div className="amp-power-station-summary" aria-live="polite">
+                                    <strong>
+                                        {getPowerWatts(portableSummary.operatingAmpsTenths).toLocaleString('ja-JP')}W
+                                        {' / '}
+                                        {AC_OUTPUT_LIMIT_W.toLocaleString('ja-JP')}W
+                                    </strong>
+                                    <span>
+                                        定格出力の
+                                        {(getPowerWatts(portableSummary.operatingAmpsTenths) / AC_OUTPUT_LIMIT_W * 100).toFixed(1)}%
+                                        {' ・ '}
+                                        運転時の使用時間目安: {portableSummary.runningAmpsTenths > 0
+                                            ? formatEstimatedRuntime(portableSummary.runningAmpsTenths)
+                                            : '—'}
+                                    </span>
+                                </div>
+                                {getPowerWatts(portableSummary.operatingAmpsTenths) > AC_OUTPUT_LIMIT_W && (
+                                    <p className="amp-over-limit" role="status">
+                                        <strong>ポータブル電源の定格出力を超えています</strong>
+                                        <span>
+                                            推定出力が定格出力を
+                                            {(getPowerWatts(portableSummary.operatingAmpsTenths) - AC_OUTPUT_LIMIT_W)
+                                                .toLocaleString('ja-JP')}W超過しています。
+                                        </span>
+                                    </p>
+                                )}
+                                {portableSummary.activeAppliances.some(
+                                    (appliance) => getPowerWatts(getApplianceOperatingAmpsTenths(appliance)) > AC_SINGLE_PORT_LIMIT_W
+                                ) && (
+                                    <p className="amp-muted">
+                                        1台の推定出力が1ポート最大{AC_SINGLE_PORT_LIMIT_W.toLocaleString('ja-JP')}Wを超えています。
+                                    </p>
+                                )}
+                                <p className="amp-muted">
+                                    ポータブル電源は契約アンペア数や建物の配線容量を増やしません。建物の配線へ給電せず、家電に直接接続してください。
+                                </p>
+                                <p className="amp-muted">
+                                    {POWER_STATION_CAPACITY_WH.toLocaleString('ja-JP')}Wh容量（実用目安
+                                    {Math.round(POWER_STATION_CAPACITY_WH * AC_USABLE_CAPACITY_RATIO).toLocaleString('ja-JP')}Wh）、
+                                    AC定格出力{AC_OUTPUT_LIMIT_W.toLocaleString('ja-JP')}W級を想定した試算です。
+                                    100V換算であり、実際の出力・使用時間は機器や条件で異なります。
+                                </p>
+                            </section>
+                        )}
+
                         <p className="amp-muted amp-safety-note">※100V家電用の目安数値です（遮断保証なし）</p>
 
                         <AmpereChart
-                            appliances={dashboard.appliances}
+                            appliances={householdAppliances}
                             limitTenths={limitTenths}
                             totalTenths={summary.totalTenths}
                             status={summary.status}
                         />
                         <ApplianceList
                             appliances={dashboard.appliances}
-                            onToggle={(id, field) => updateAppliance(id, (appliance) => ({
-                                ...appliance,
-                                [field]: !appliance[field]
-                            }))}
+                            onToggle={(id, field) => updateAppliance(id, (appliance) => {
+                                if (field === 'powerSource') {
+                                    return {
+                                        ...appliance,
+                                        powerSource: appliance.powerSource === 'household' ? 'portable' : 'household',
+                                    };
+                                }
+                                if (field === 'enabled') return {...appliance, enabled: !appliance.enabled};
+                                return {...appliance, starting: !appliance.starting};
+                            })}
                             onEdit={(appliance) => setEditingId(appliance.id)}
                         />
                         <ApplianceEditor

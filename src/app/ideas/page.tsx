@@ -2,35 +2,23 @@ import {readFileSync} from 'node:fs';
 import {join} from 'node:path';
 import type {Metadata} from 'next';
 import {parseCatalog} from '../../lib/ampere/csv';
+import {
+    AC_OUTPUT_LIMIT_W,
+    AC_SINGLE_PORT_LIMIT_W,
+    formatEstimatedRuntime,
+    getPowerWatts,
+    POWER_STATION_CAPACITY_WH,
+} from '../../lib/ampere/portablePower';
 
 export const metadata: Metadata = {
     title: 'ポータブル電源の活用アイデア | Amply',
     description: '容量1,024Wh、AC定格出力1,550W級のポータブル電源を想定し、家電別の連続使用時間を試算します。',
 };
 
-const POWER_STATION_CAPACITY_WH = 1024;
-const AC_OUTPUT_LIMIT_W = 1550;
-const AC_SINGLE_PORT_LIMIT_W = 1500;
-const AC_USABLE_CAPACITY_RATIO = 0.85;
-const HOUSEHOLD_VOLTAGE = 100;
 const appliances = parseCatalog(readFileSync(
     join(process.cwd(), 'public', 'data', 'appliances.csv'),
     'utf8'
 ));
-
-function getPowerWatts(ampsTenths: number): number {
-    return ampsTenths * HOUSEHOLD_VOLTAGE / 10;
-}
-
-function formatRuntime(ampsTenths: number): string {
-    const watts = getPowerWatts(ampsTenths);
-    if (watts <= 0) return '算出できません';
-
-    const runtimeHours = (POWER_STATION_CAPACITY_WH * AC_USABLE_CAPACITY_RATIO) / watts;
-    return runtimeHours < 1
-        ? `約${Math.round(runtimeHours * 60)}分`
-        : `約${runtimeHours.toFixed(1)}時間`;
-}
 
 export default function IdeasPage() {
     return (
@@ -143,7 +131,7 @@ export default function IdeasPage() {
                                             {getPowerWatts(appliance.startupAmpsTenths ?? appliance.runningAmpsTenths)
                                                 .toLocaleString('ja-JP')}W
                                         </td>
-                                        <td>{formatRuntime(appliance.runningAmpsTenths)}</td>
+                                        <td>{formatEstimatedRuntime(appliance.runningAmpsTenths)}</td>
                                         <td>{appliance.note}</td>
                                     </tr>
                                 ))}
